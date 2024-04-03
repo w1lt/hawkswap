@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import datetime
-import psycopg2
-from flask import g
-import os
+import sqlite3
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -15,10 +13,9 @@ login_manager.login_view = 'login'
 DATABASE = 'marketplace.db'
 
 def get_db_connection():
-    if 'db_connection' not in g:
-        DATABASE_URL = os.environ.get('DATABASE_URL')
-        g.db_connection = psycopg2.connect(DATABASE_URL, sslmode='require')
-    return g.db_connection
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 class User(UserMixin):
     def __init__(self, id, username):
@@ -28,7 +25,7 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     conn = get_db_connection()
-    user = conn.execute('SELECT * FROM users WHERE id = %s', (user_id,))
+    user = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone()
     conn.close()
     if user:
         return User(user['id'], user['username'])
@@ -39,14 +36,14 @@ def load_user(user_id):
 def show_user_profile(username):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
     user = cursor.fetchone()
     cursor.close()
     conn.close()
     #find all listings by this user
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products WHERE seller = %s", (username,))
+    cursor.execute("SELECT * FROM products WHERE seller = ?", (username,))
     listings = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -56,7 +53,7 @@ def show_user_profile(username):
 def show_listing(id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products WHERE id = %s", (id,))
+    cursor.execute("SELECT * FROM products WHERE id = ?", (id,))
     listing = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -66,7 +63,7 @@ def show_listing(id):
 def inbox():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM messages WHERE receiver = %s", (current_user.username,))
+    cursor.execute("SELECT * FROM messages WHERE receiver = ?", (current_user.username,))
     messages = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -77,7 +74,7 @@ def message_seller(listing_id):
     # find user from listing id
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products WHERE id = %s", (listing_id,))
+    cursor.execute("SELECT * FROM products WHERE id = ?", (listing_id,))
     listing = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -88,7 +85,7 @@ def message_seller(listing_id):
         date_sent = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO messages (sender, receiver, message, datesent, listing_id) VALUES (%s, %s, %s, %s, %s)', (sender, receiver, message, date_sent, listing_id,))
+        cursor.execute('INSERT INTO messages (sender, receiver, message, datesent, listing_id) VALUES (?, ?, ?, ?, ?)', (sender, receiver, message, date_sent, ))
         conn.commit()
         cursor.close()
         conn.close()
@@ -111,11 +108,11 @@ def register():
             return redirect(url_for('register'))
         
         conn = get_db_connection()
-        if conn.execute('SELECT * FROM users WHERE username = %s', (username,)).fetchone():
+        if conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone():
             flash('Username is already taken.', 'error')
             conn.close()
             return redirect(url_for('register'))
-        conn.execute('INSERT INTO users (username, password, email) VALUES (%s, %s, %s)', (username, password, email))
+        conn.execute('INSERT INTO users (username, password, email) VALUES (?, ?, ?)', (username, password, email))
         conn.commit()
         conn.close()
         return redirect(url_for('login'))
@@ -133,7 +130,7 @@ def create_listing():
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO products (name, description, price, dateposted, seller) VALUES (%s, %s, %s, %s, %s)', (name, description, price, date_posted, seller, ))
+        cursor.execute('INSERT INTO products (name, description, price, dateposted, seller) VALUES (?, ?, ?, ?, ?)', (name, description, price, date_posted, seller, ))
         conn.commit()
         cursor.close()
         conn.close()
@@ -148,7 +145,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password)).fetchone()
+        user = conn.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password)).fetchone()
         conn.close()
         if user:
             login_user(User(user['id'], user['username']))
