@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HawkSwap | Home</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <a href="/create-listing">Create a New Listing</a>
+
+    <ul>
+      {% for product in products %}
+      <li>
+        <a href="/listing/{{ product.id }}">{{ product.name }}</a>- ${{
+        product.price }}
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

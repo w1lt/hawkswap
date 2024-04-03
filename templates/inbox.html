@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HawkSwap | Inbox</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <ul>
+      {% for message in messages %}
+      <li>
+        <a href="/user/{{ message.sender }}">{{ message.sender }}</a> - {{
+        message.message }} -
+        <a href="/message-seller/{{ message.listing_id }}">Reply</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HawkSwap | Send Message</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <h2>Messaging {{listing.seller}}</h2>
+    <p>Regarding {{listing.name}} - ${{listing.price}}</p>
+    <form action="/message-seller/{{ listing.id }}" method="post">
+      <label for="message">Message:</label>
+      <textarea id="message" name="message"></textarea><br /><br />
+      <input type="submit" value="Send Message" />
+  </body>
+</html>

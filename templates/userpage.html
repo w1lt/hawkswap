@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ user.username }}'s profile</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <p>{{ user.username }}'s profile</p>
+    <p>Email: {{ user.email }}</p>
+    <ul>
+      {% for listing in listings %}
+      <li>
+        <a href="/listing/{{ listing.id }}">{{ listing.name }}</a>- ${{
+        listing.price }}
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

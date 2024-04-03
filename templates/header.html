@@ -1,0 +1,11 @@
+<header>
+  <p><a href="/">HawkSwap</a> | <a href="/inbox">Inbox</a></p>
+  
+    <p>Hello,
+    <a href="/user/{{ current_user.username }}">{{ current_user.username }}</a>
+    <form action="/logout" method="post">
+        <input type="submit" value="Logout" />
+      </form>
+  </p>
+  
+</header>

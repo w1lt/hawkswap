@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ listing.name }}</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <h1>{{ listing.name }}</h1>
+    <p>
+      Posted
+      <script>
+        //get current date and subtract the date the listing was created to show how many days ago it was posted
+        var dateposted = new Date("{{ listing.dateposted }}");
+        var currentdate = new Date();
+        var diff = currentdate - dateposted;
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor(diff / (1000 * 60 * 60));
+        if (days == 0) {
+          if (hours == 0) {
+            //if the listing was posted less than an hour ago, show the minutes
+            //if minutes is 0, show "just now"
+            var minutes = Math.floor(diff / (1000 * 60));
+            if (minutes == 0) {
+              document.write("just now");
+            } else {
+              document.write(minutes + " minutes ago");
+            }
+          } else {
+            document.write(hours + " hours ago");
+          }
+        } else {
+          document.write(days + " days ago");
+        }
+      </script>
+      by <a href="/user/{{ listing.seller }}">{{ listing.seller }}</a>
+    </p>
+    <p>{{ listing.description }}</p>
+    <p>costs ${{ listing.price }}</p>
+    <!-- message seller button -->
+    <form action="/message-seller/{{ listing.id }}">
+      <input type="submit" value="Message Seller" />
+    </form>
+  </body>
+</html>
