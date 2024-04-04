@@ -5,13 +5,44 @@
   </head>
   <body>
     {% include 'header.html' %}
-    <a href="/create-listing">Create a New Listing</a>
-
+    <h1>All Listings</h1>
+    <form action="/search" method="POST">
+      <label for="search">Search:</label>
+      <input type="text" id="search_query" name="search_query" required />
+      <input type="submit" value=">" />
+    </form>
     <ul>
-      {% for product in products %}
+      {% for listing in listings %}
       <li>
-        <a href="/listing/{{ product.id }}">{{ product.name }}</a>- ${{
-        product.price }}
+        <b>
+          <script>
+            var price = "{{ listing.price }}";
+            price = Math.round(price);
+            document.write("$" + price);
+          </script>
+        </b>
+        <a href="/listing/{{ listing.id }}">{{ listing.name }}</a> ·
+        <script>
+          var dateposted = new Date("{{ listing.dateposted }}");
+          var currentdate = new Date();
+          var diff = currentdate - dateposted;
+          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          var hours = Math.floor(diff / (1000 * 60 * 60));
+          if (days == 0) {
+            if (hours == 0) {
+              var minutes = Math.floor(diff / (1000 * 60));
+              if (minutes == 0) {
+                document.write("just now");
+              } else {
+                document.write(minutes + " minutes ago");
+              }
+            } else {
+              document.write(hours + " hours ago");
+            }
+          } else {
+            document.write(days + " days ago");
+          }
+        </script>
       </li>
       {% endfor %}
     </ul>

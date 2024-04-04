@@ -6,13 +6,47 @@
   <body>
     {% include 'header.html' %}
     <ul>
-      {% for message in messages %}
+      {% for chat in chats %}
       <li>
-        <a href="/user/{{ message.sender }}">{{ message.sender }}</a> - {{
-        message.message }} -
-        <a href="/message-seller/{{ message.listing_id }}">Reply</a>
+        <a href="/chat/{{ chat.chat_id }}">{{ chat.name }}</a> -
+        <script>
+          if ("{{chat.unread_count}}" > "0") {
+            document.write(
+              "<b>{{chat.message_content }}</b> ({{chat.unread_count}} unread messages)"
+            );
+          } else {
+            document.write("{{chat.message_content }}");
+          }
+        </script>
+        -
+        <script>
+          var dateposted = new Date("{{ chat.sent_at }}");
+          var currentdate = new Date();
+          var diff = currentdate - dateposted;
+          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          var hours = Math.floor(diff / (1000 * 60 * 60));
+          if (days == 0) {
+            if (hours == 0) {
+              var minutes = Math.floor(diff / (1000 * 60));
+              if (minutes == 0) {
+                document.write("just now");
+              } else {
+                document.write(minutes + " minutes ago");
+              }
+            } else {
+              document.write(hours + " hours ago");
+            }
+          } else {
+            document.write(days + " days ago");
+          }
+        </script>
       </li>
       {% endfor %}
     </ul>
+    <script>
+      if ("{{ chats }}" == "[]") {
+        document.write("No messages yet.");
+      }
+    </script>
   </body>
 </html>

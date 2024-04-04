@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HawkSwap | Search</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <h1>Search</h1>
+    <form action="/search" method="POST">
+      <label for="search">Search:</label>
+      <input type="text" id="search_query" name="search_query" required />
+      <input type="submit" value="Search" />
+    </form>
+
+    {% if listings %}
+    <h2>Results</h2>
+    <ul>
+      {% for listing in listings %}
+      <li>
+        <a href="/listing/{{ listing.id }}">{{ listing.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% if not listings %}
+    <p>No results found.</p>
+    {% endif %}
+  </body>
+</html>

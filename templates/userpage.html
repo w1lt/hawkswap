@@ -5,8 +5,17 @@
   </head>
   <body>
     {% include 'header.html' %}
-    <p>{{ user.username }}'s profile</p>
+    <h2>{{ user.username }}'s profile</h2>
     <p>Email: {{ user.email }}</p>
+    <h1>
+      <script>
+        if ("{{ user.username }}" == "{{ current_user.username }}") {
+          document.write("My Listings");
+        } else {
+          document.write("{{ user.username }}'s Listings");
+        }
+      </script>
+    </h1>
     <ul>
       {% for listing in listings %}
       <li>

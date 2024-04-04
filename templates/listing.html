@@ -5,11 +5,21 @@
   </head>
   <body>
     {% include 'header.html' %}
-    <h1>{{ listing.name }}</h1>
+    <h1>{{ listing.name }} - ${{ listing.price }}</h1>
+    <script>
+      // if the current user is the seller, show an edit button
+      if ("{{ current_user.username }}" == "{{ sellerusername }}") {
+        document.write(
+          `<form action="/listing/{{ listing.id }}/edit">
+              <input type="submit" value="Edit Listing" />
+            </form>`
+        );
+      }
+    </script>
+
     <p>
       Posted
       <script>
-        //get current date and subtract the date the listing was created to show how many days ago it was posted
         var dateposted = new Date("{{ listing.dateposted }}");
         var currentdate = new Date();
         var diff = currentdate - dateposted;
@@ -17,8 +27,6 @@
         var hours = Math.floor(diff / (1000 * 60 * 60));
         if (days == 0) {
           if (hours == 0) {
-            //if the listing was posted less than an hour ago, show the minutes
-            //if minutes is 0, show "just now"
             var minutes = Math.floor(diff / (1000 * 60));
             if (minutes == 0) {
               document.write("just now");
@@ -32,13 +40,17 @@
           document.write(days + " days ago");
         }
       </script>
-      by <a href="/user/{{ listing.seller }}">{{ listing.seller }}</a>
+      by <a href="/user/{{ sellerusername }}">{{ sellerusername }}</a>
     </p>
     <p>{{ listing.description }}</p>
-    <p>costs ${{ listing.price }}</p>
-    <!-- message seller button -->
-    <form action="/message-seller/{{ listing.id }}">
-      <input type="submit" value="Message Seller" />
-    </form>
+    <script>
+      if ("{{ current_user.username }}" != "{{ sellerusername }}") {
+        document.write(
+          `<form action="/message-seller/{{ listing.id }}">
+            <input type="submit" value="Message Seller" />
+          </form>`
+        );
+      }
+    </script>
   </body>
 </html>

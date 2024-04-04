@@ -13,24 +13,42 @@ def create_tables(conn):
         );
     """)
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS products (
+        CREATE TABLE IF NOT EXISTS listings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT,
             price REAL NOT NULL,
             dateposted TEXT NOT NULL,
-            seller TEXT NOT NULL
+            seller_id INTEGER NOT NULL,
+            FOREIGN KEY (seller_id) REFERENCES users(id)
+            
+        );
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS chats (
+            chat_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            listing_id INTEGER,
+            seller_id INTEGER,
+            buyer_id INTEGER,
+            FOREIGN KEY (seller_id) REFERENCES users(id),
+            FOREIGN KEY (buyer_id) REFERENCES users(id),
+            FOREIGN KEY (listing_id) REFERENCES listings(id)
         );
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sender TEXT NOT NULL,
-            receiver TEXT NOT NULL,
-            message TEXT NOT NULL,
-            datesent TEXT NOT NULL
+            message_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            chat_id INTEGER,
+            sender_id INTEGER,  
+            message_content TEXT,
+            sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            read_status BOOLEAN DEFAULT FALSE,
+            FOREIGN KEY (chat_id) REFERENCES chats(chat_id),
+            FOREIGN KEY (sender_id) REFERENCES users(id)
         );
     """)
+
     conn.commit()
 
 if __name__ == '__main__':

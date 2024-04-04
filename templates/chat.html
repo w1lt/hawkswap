@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HawkSwap | Inbox</title>
+  </head>
+  <body>
+    {% include 'header.html' %}
+    <ul>
+      {% for message in messages %}
+      <li>
+        <script>
+       username =  "{{ message.username }}";
+       if (username == "{{ current_user.username }}") {
+         document.write("You: ");
+       } else {
+         document.write(username + ": ");
+       }
+    </script>
+        
+        {{ message.message_content }}
+
+        <script>
+
+            if ("{{message.read_status}}" == "0"
+            //and the message sender_id is the current user
+            && "{{message.username}}" == "{{current_user.username}}"
+            ) {
+                document.write(" (Not seen yet)");
+            }
+            else {
+                //nothing
+            }
+        </script>
+
+       
+
+        {% endfor %}
+      </li>
+    </ul>
+    <form action="" method="post">
+      <label for="message">Message:</label>
+      <input type="text" id="message" name="message" required /><br /><br />
+      <input type="submit" value="Send" />
+  </body>
+</html>
