@@ -10,7 +10,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
+app.config['UPLOADED_IMAGES_DEST'] = 'uploads'
 
 
 login_manager = LoginManager()
@@ -104,6 +104,19 @@ def delete_listing(id):
     conn.close()
     return redirect(url_for('index'))
 
+@app.route('/listing/<id>/mark-as-sold', methods=['POST'])
+@login_required
+def mark_as_sold(id):
+    conn = get_db_connection()
+    listing = conn.execute("SELECT * FROM listings WHERE id = :id", {'id': id}).fetchone()
+    seller = conn.execute("SELECT * FROM users WHERE id = :id", {'id': listing['seller_id']}).fetchone()
+    if current_user.id != seller['id']:
+        return redirect(url_for('show_listing', id=id))
+    conn.execute('UPDATE listings SET is_sold = TRUE WHERE id = :id', {'id': id})
+    conn.commit()
+    conn.close()
+    return redirect(url_for('show_listing', id=id))
+
 @app.route('/save-listing/<int:listing_id>', methods=['POST'])
 @login_required
 def save_listing(listing_id):
@@ -135,7 +148,7 @@ def saved_listings():
         ORDER BY s.saved_at DESC
     """, {'user_id': current_user.id}).fetchall()
     conn.close()
-    return render_template('saved_listings.html', saved_listings=saved_listings)
+    return render_template('saved_listings.html', listings=saved_listings)
 
 @app.route('/inbox')
 @login_required
@@ -292,8 +305,9 @@ def create_listing():
         image = request.files['image']
         if image:
             filename = secure_filename(image.filename)
-            image_path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-            image.save(image_path)
+            # Save the image in the 'uploads' folder inside the 'static' directory
+            image_path = os.path.join('uploads', filename)
+            image.save(os.path.join('static', image_path))  # Save the image to the filesystem
 
         conn = get_db_connection()
         conn.execute('INSERT INTO listings (name, description, price, dateposted, seller_id, image_path) VALUES (:name, :description, :price, :date_posted, :seller, :image_path)', {'name': name, 'description': description, 'price': price, 'date_posted': date_posted, 'seller': seller, 'image_path': image_path})
@@ -302,6 +316,7 @@ def create_listing():
 
         return redirect(url_for('index'))
     return render_template('create_listing.html')
+
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -326,7 +341,7 @@ def login():
         user = session.execute('SELECT * FROM users WHERE username = :username AND password = :password', {'username': username, 'password': password}).fetchone()
         session.close()  # Close the session
         if user:
-            login_user(User(user['id'], user['username']))
+            login_user(User(user['id'], user['username'], user['name_first']))
             return redirect(url_for('index'))
         flash('Invalid username or password')
     return render_template('login.html')
@@ -343,7 +358,7 @@ def logout():
 @login_required
 def index():
     conn = get_db_connection()
-    listings = conn.execute ('SELECT * FROM listings ORDER BY dateposted DESC').fetchall()
+    listings = conn.execute ('SELECT * FROM listings where is_sold = "0" ORDER BY dateposted DESC').fetchall()
     conn.close()
     return render_template('index.html', listings=listings)
 

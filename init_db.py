@@ -22,6 +22,7 @@ def create_tables(conn):
             price REAL NOT NULL,
             image_path TEXT,
             dateposted TEXT NOT NULL,
+            is_sold BOOLEAN DEFAULT FALSE,
             seller_id INTEGER NOT NULL,
             FOREIGN KEY (seller_id) REFERENCES users(id)
             

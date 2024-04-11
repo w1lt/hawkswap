@@ -31,4 +31,8 @@ block content %}
 <form action="/listing/{{ listing.id }}/delete" method="post">
   <input type="submit" value="Delete Listing" />
 </form>
-{% endblock %}
+
+<form action="/listing/{{ listing.id }}/mark-as-sold" method="post">
+  <input type="submit" value="Mark as sold" />
+</form>
+form {% endblock %}
