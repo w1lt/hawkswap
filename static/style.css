@@ -50,6 +50,27 @@ main {
   height: 200px;
 }
 
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.listing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+}
+
+.listing-date {
+  opacity: 0.5;
+}
+
 .listing {
   display: flex;
   flex-direction: column;

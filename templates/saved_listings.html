@@ -33,4 +33,6 @@ block content %}
     }
   </script>
 </div>
-{% endfor %} {% endblock %}
+{% endfor %} {% if not saved_listings %}
+<p>No saved listings found.</p>
+{% endif %} {% endblock %}

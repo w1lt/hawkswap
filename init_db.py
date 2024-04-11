@@ -8,6 +8,8 @@ def create_tables(conn):
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
+            name_first TEXT NOT NULL,
+            name_last TEXT NOT NULL,
             password TEXT NOT NULL,
             email TEXT NOT NULL
         );

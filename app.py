@@ -25,9 +25,11 @@ def get_db_connection():
     return db_session()
 
 class User(UserMixin):
-    def __init__(self, id, username):
+    def __init__(self, id, username, name_first):
         self.id = id
         self.username = username
+        self.name_first = name_first
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -35,7 +37,7 @@ def load_user(user_id):
     user = session.execute('SELECT * FROM users WHERE id = :user_id', {'user_id': user_id}).fetchone()
     session.close()
     if user:
-        return User(user['id'], user['username'])
+        return User(user['id'], user['username'], user['name_first'])
     return None
 
 @app.teardown_appcontext
@@ -253,6 +255,8 @@ def get_messages(chat_id):
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        first = request.form['first']
+        last = request.form['last']
         password = request.form['password']
         email = request.form['email']
 
@@ -267,7 +271,7 @@ def register():
             flash('Username is already taken.', 'error')
             conn.close()
             return redirect(url_for('register'))
-        conn.execute('INSERT INTO users (username, password, email) VALUES (:username, :password, :email)', {'username': username, 'password': password, 'email': email} )
+        conn.execute('INSERT INTO users (username, name_first, name_last, password, email) VALUES (:username, :name_first, :name_last, :password, :email)', {'username': username,'name_first': first,  'name_last': last, 'password': password, 'email': email} )
         conn.commit()
         conn.close()
         return redirect(url_for('login'))
