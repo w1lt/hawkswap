@@ -16,7 +16,7 @@
           </script>
         </b>
       </div>
-      {{ listing.name }}
+      {{ listing.name }} {% if listing.is_sold %} (SOLD) {% endif %}
       <div class="listing-date">
         <script>
           var dateposted = new Date("{{ listing.dateposted }}");

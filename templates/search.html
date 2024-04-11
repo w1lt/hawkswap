@@ -6,13 +6,8 @@ block content %}
   <input type="text" id="search_query" name="search_query" required />
   <input type="submit" value="Search" />
 </form>
-
 {% if listings %}
-<h2>Results</h2>
-{% for listing in listings %}
-<div class="listing">
-  <a href="/listing/{{ listing.id }}">{{ listing.name }}</a>
-</div>
-{% endfor %} {% endif %} {% if not listings %}
+<h2>Results:</h2>
+{% endif %} {% include 'listings-grid.html' %} {% if not listings %}
 <p>No results found.</p>
 {% endif %} {% endblock %}

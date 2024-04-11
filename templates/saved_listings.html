@@ -1,38 +1,6 @@
 {% extends 'base.html' %} {% block title %}Saved | HawkSwap{% endblock %} {%
 block content %}
 <h2>Saved Listings</h2>
-{% for listing in listings %}
-<div class="listing">
-  <b>
-    <script>
-      var price = "{{ listing.price }}";
-      price = Math.round(price);
-      document.write("$" + price);
-    </script>
-  </b>
-  <a href="/listing/{{ listing.id }}">{{ listing.name }}</a> · Posted
-  <script>
-    var dateposted = new Date("{{ listing.dateposted }}");
-    var currentdate = new Date();
-    var diff = currentdate - dateposted;
-    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    var hours = Math.floor(diff / (1000 * 60 * 60));
-    if (days == 0) {
-      if (hours == 0) {
-        var minutes = Math.floor(diff / (1000 * 60));
-        if (minutes == 0) {
-          document.write("just now");
-        } else {
-          document.write(minutes + " minutes ago");
-        }
-      } else {
-        document.write(hours + " hours ago");
-      }
-    } else {
-      document.write(days + " days ago");
-    }
-  </script>
-</div>
-{% endfor %} {% if not saved_listings %}
+{% include 'listings-grid.html' %} {% if not listings %}
 <p>No saved listings found.</p>
 {% endif %} {% endblock %}

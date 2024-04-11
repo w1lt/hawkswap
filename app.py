@@ -141,7 +141,7 @@ def save_listing(listing_id):
 def saved_listings():
     conn = get_db_connection()
     saved_listings = conn.execute("""
-        SELECT l.id, l.name, l.description, l.price, l.dateposted, s.saved_at
+        SELECT l.id, l.name, l.description, l.price, l.dateposted, s.saved_at, l.image_path
         FROM saves s
         JOIN listings l ON s.listing_id = l.id
         WHERE s.user_id = :user_id
@@ -304,7 +304,9 @@ def create_listing():
         # Handle image upload
         image = request.files['image']
         if image:
-            filename = secure_filename(image.filename)
+            # Generate a unique filename by appending a timestamp
+            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = secure_filename(f"{timestamp}_{image.filename}")
             # Save the image in the 'uploads' folder inside the 'static' directory
             image_path = os.path.join('uploads', filename)
             image.save(os.path.join('static', image_path))  # Save the image to the filesystem
@@ -316,8 +318,6 @@ def create_listing():
 
         return redirect(url_for('index'))
     return render_template('create_listing.html')
-
-
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
