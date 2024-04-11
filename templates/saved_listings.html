@@ -1,21 +1,7 @@
-{% extends 'base.html' %} {% block title %}Home | HawkSwap{% endblock %} {%
+{% extends 'base.html' %} {% block title %}Saved | HawkSwap{% endblock %} {%
 block content %}
-<script>
-  var currentdate = new Date();
-  var hours = currentdate.getHours();
-  var greeting = "Hello";
-  if (hours >= 0 && hours < 12) {
-    greeting = "Good morning";
-  } else if (hours >= 12 && hours < 18) {
-    greeting = "Good afternoon";
-  } else {
-    greeting = "Good evening";
-  }
-  document.write(greeting + ", {{ current_user.username }}!");
-</script>
-<h2>All Listings</h2>
-
-{% for listing in listings %}
+<h2>Saved Listings</h2>
+{% for listing in saved_listings %}
 <div class="listing">
   <b>
     <script>
@@ -24,7 +10,7 @@ block content %}
       document.write("$" + price);
     </script>
   </b>
-  <a href="/listing/{{ listing.id }}">{{ listing.name }}</a> ·
+  <a href="/listing/{{ listing.id }}">{{ listing.name }}</a> · Posted
   <script>
     var dateposted = new Date("{{ listing.dateposted }}");
     var currentdate = new Date();

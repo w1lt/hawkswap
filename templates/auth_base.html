@@ -1,0 +1,26 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}HawkSwap{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+  </head>
+  <body>
+    <main>{% block content %} {% endblock %}</main>
+
+    <footer>
+      <style>
+        footer {
+          position: fixed;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          background-color: #f5f5f5;
+          text-align: center;
+          padding: 10px;
+        }
+      </style>
+      <p>&copy; 2024 Joshua Lee and Will Whitehead</p>
+    </footer>
+  </body>
+</html>

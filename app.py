@@ -4,6 +4,7 @@ import datetime
 import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask import jsonify
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -53,9 +54,16 @@ def show_listing(id):
     conn = get_db_connection()
     listing = conn.execute("SELECT * FROM listings WHERE id = :id", {'id': id}).fetchone()
     seller = conn.execute("SELECT * FROM users WHERE id = :id", {'id': listing['seller_id']}).fetchone()
+    #if the listing is saved by the current user, set the saved variable to True
+    saved = conn.execute("SELECT * FROM saves WHERE user_id = :user_id AND listing_id = :listing_id", {'user_id': current_user.id, 'listing_id': id}).fetchone()
+    chat = conn.execute("""
+        SELECT c.chat_id
+        FROM chats c
+        WHERE (listing_id = :listing_id AND seller_id = :seller_id AND buyer_id = :buyer_id) OR (listing_id = :listing_id AND seller_id = :buyer_id AND buyer_id = :seller_id)
+    """, {'listing_id': id, 'seller_id': seller['id'], 'buyer_id': current_user.id}).fetchone()
     conn.close()
 
-    return render_template('listing.html', listing=listing, sellerusername=seller.username)
+    return render_template('listing.html', listing=listing, sellerusername=seller.username, chat=chat, saved=saved)
 
 @app.route('/listing/<id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -90,27 +98,61 @@ def delete_listing(id):
     conn.close()
     return redirect(url_for('index'))
 
+@app.route('/save-listing/<int:listing_id>', methods=['POST'])
+@login_required
+def save_listing(listing_id):
+    #if the listing is already saved, unsave it
+    conn = get_db_connection()
+    saved = conn.execute("SELECT * FROM saves WHERE user_id = :user_id AND listing_id = :listing_id", {'user_id': current_user.id, 'listing_id': listing_id}).fetchone()
+    if saved:
+        conn.execute("DELETE FROM saves WHERE user_id = :user_id AND listing_id = :listing_id", {'user_id': current_user.id, 'listing_id': listing_id})
+        conn.commit()
+        conn.close()
+        #redirect to the same page
+        return redirect(url_for('show_listing', id=listing_id))
+    saved_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("INSERT INTO saves (user_id, listing_id, saved_at) VALUES (:user_id, :listing_id, :saved_at)", {'user_id': current_user.id, 'listing_id': listing_id, 'saved_at': saved_at})
+    conn.commit()
+    conn.close()
+    return redirect(url_for('show_listing', id=listing_id))
+
+
+@app.route('/saved-listings')
+@login_required
+def saved_listings():
+    conn = get_db_connection()
+    saved_listings = conn.execute("""
+        SELECT l.id, l.name, l.description, l.price, l.dateposted, s.saved_at
+        FROM saves s
+        JOIN listings l ON s.listing_id = l.id
+        WHERE s.user_id = :user_id
+        ORDER BY s.saved_at DESC
+    """, {'user_id': current_user.id}).fetchall()
+    conn.close()
+    return render_template('saved_listings.html', saved_listings=saved_listings)
+
 @app.route('/inbox')
 @login_required
 def inbox():
     conn = get_db_connection()
-    chats = conn.execute("""
-        SELECT c.chat_id, l.name, u.username, m.message_content, m.sent_at, m.sent_at,
+    chats = conn.execute("""          
+        SELECT c.chat_id, l.name, u.username, m.message_content, m.sent_at, m.sent_at, 
                (SELECT COUNT(*) FROM messages WHERE chat_id = c.chat_id AND read_status = "0" AND sender_id != :user_id) AS unread_count
         FROM chats c
         JOIN listings l ON c.listing_id = l.id
-        JOIN users u ON (c.buyer_id = u.id OR c.seller_id = u.id) AND u.id != :user_id
         JOIN (
             SELECT chat_id, MAX(sent_at) as max_sent_at
             FROM messages
             GROUP BY chat_id
         ) latest_msg ON c.chat_id = latest_msg.chat_id
         JOIN messages m ON c.chat_id = m.chat_id AND m.sent_at = latest_msg.max_sent_at
+        JOIN users u ON m.sender_id = u.id
         WHERE c.buyer_id = :user_id OR c.seller_id = :user_id
         ORDER BY m.sent_at DESC
     """, {'user_id': current_user.id}).fetchall()
     conn.close()
     return render_template('inbox.html', chats=chats)
+
 
 @app.route('/message-seller/<listing_id>', methods=['GET', 'POST'])
 @login_required
@@ -133,8 +175,7 @@ def message_seller(listing_id):
     if request.method == 'POST':
         message_content = request.form['message']
         sender_id = current_user.id
-        sent_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+        datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         conn = get_db_connection()
         chat = conn.execute("""
             SELECT c.chat_id
@@ -142,11 +183,11 @@ def message_seller(listing_id):
              WHERE (listing_id = :listing_id AND seller_id = :seller_id AND buyer_id = :buyer_id) OR (listing_id = :listing_id AND seller_id = :buyer_id AND buyer_id = :seller_id)
     """, {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': current_user.id}).fetchone()
         if not chat:
-            conn.execute("INSERT INTO chats (listing_id, seller_id, buyer_id) VALUES (:listing_id, :seller_id, :buyer_id)", {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': sender_id})
+            conn.execute("INSERT INTO chats (listing_id, seller_id, buyer_id, created_at) VALUES (:listing_id, :seller_id, :buyer_id, :created_at)", {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': sender_id, 'created_at': datetime})
             chat_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
         else:
             chat_id = chat['chat_id']
-        conn.execute('INSERT INTO messages (chat_id, sender_id, message_content, sent_at) VALUES (:chat_id, :sender_id, :message_content, :sent_at)', {'chat_id': chat_id, 'sender_id': sender_id, 'message_content': message_content, 'sent_at': sent_at})
+        conn.execute('INSERT INTO messages (chat_id, sender_id, message_content) VALUES (:chat_id, :sender_id, :message_content)', {'chat_id': chat_id, 'sender_id': sender_id, 'message_content': message_content})
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
@@ -163,15 +204,12 @@ def chat(chat_id):
         WHERE m.chat_id = :chat_id
         ORDER BY m.sent_at
     """, {'chat_id': chat_id}).fetchall()
-    #when the user whose id is not the sender id  opens the chat, make all the read status boolean true
     conn.execute("""
         UPDATE messages
         SET read_status = TRUE
         WHERE chat_id = :chat_id AND sender_id != :user_id
     """, {'chat_id': chat_id, 'user_id': current_user.id})
     conn.commit()
-    
-
     conn.close()
 
     if request.method == 'POST':
@@ -183,7 +221,28 @@ def chat(chat_id):
         conn.commit()
         conn.close()
         return redirect(url_for('chat', chat_id=chat_id))
-    return render_template('chat.html', messages=messages)
+    return render_template('chat.html', messages=messages, chat_id=chat_id)
+
+@app.route('/get_messages/<chat_id>', methods=['GET'])
+def get_messages(chat_id):
+    conn = get_db_connection()
+    messages = conn.execute("""
+        SELECT m.message_content, m.sent_at, u.username, m.read_status
+        FROM messages m
+        JOIN users u ON m.sender_id = u.id
+        WHERE m.chat_id = :chat_id
+        ORDER BY m.sent_at
+    """, {'chat_id': chat_id}).fetchall()
+    conn.execute("""
+        UPDATE messages
+        SET read_status = TRUE
+        WHERE chat_id = :chat_id AND sender_id != :user_id
+    """, {'chat_id': chat_id, 'user_id': current_user.id})
+    conn.commit()
+    conn.close()
+    messages_dict = [dict(message) for message in messages]
+    return jsonify(messages_dict)
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -272,5 +331,26 @@ def index():
     conn.close()
     return render_template('index.html', listings=listings)
 
+#get the number of unread messages and give that info to the header.html
+@app.context_processor
+def unread_message_count():
+    if current_user.is_authenticated:
+        conn = get_db_connection()
+        unread_count = conn.execute("""
+            SELECT COUNT(*) AS unread_count
+            FROM messages
+            WHERE chat_id IN (
+                SELECT chat_id
+                FROM chats
+                WHERE (buyer_id = :user_id OR seller_id = :user_id)
+            ) AND read_status = "0" AND sender_id != :user_id
+        """, {'user_id': current_user.id}).fetchone()
+        conn.close()
+        return (unread_count)
+    return {'unread_count': 0}
+
+    
+
+
 if __name__ == '__main__':
-    app.run(host='192.168.1.128', port=3000, debug=True)
+    app.run(debug=True)

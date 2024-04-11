@@ -1,56 +1,92 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ listing.name }}</title>
-  </head>
-  <body>
-    {% include 'header.html' %}
-    <h1>{{ listing.name }} - ${{ listing.price }}</h1>
-    <script>
-      // if the current user is the seller, show an edit button
-      if ("{{ current_user.username }}" == "{{ sellerusername }}") {
-        document.write(
-          `<form action="/listing/{{ listing.id }}/edit">
+{% extends 'base.html' %} {% block title %}{{ listing.name }}{% endblock %} {%
+block content %}
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
+</head>
+<div class="listing-title">
+  <h1>{{ listing.name }} - ${{ listing.price }}</h1>
+
+  {% if saved %}
+  <form
+    action="/save-listing/{{ listing.id }}"
+    method="post"
+    class="heart-form"
+  >
+    <button type="submit" class="heart-btn saved">
+      <i class="fas fa-heart"></i>
+    </button>
+  </form>
+  {% else %}
+  <form
+    action="/save-listing/{{ listing.id }}"
+    method="post"
+    class="heart-form"
+  >
+    <button type="submit" class="heart-btn">
+      <i class="far fa-heart"></i>
+    </button>
+  </form>
+  {% endif %}
+</div>
+
+<script>
+  if ("{{ current_user.username }}" == "{{ sellerusername }}") {
+    document.write(
+      `<form action="/listing/{{ listing.id }}/edit">
               <input type="submit" value="Edit Listing" />
             </form>`
-        );
-      }
-    </script>
+    );
+  }
+</script>
 
-    <p>
-      Posted
-      <script>
-        var dateposted = new Date("{{ listing.dateposted }}");
-        var currentdate = new Date();
-        var diff = currentdate - dateposted;
-        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        var hours = Math.floor(diff / (1000 * 60 * 60));
-        if (days == 0) {
-          if (hours == 0) {
-            var minutes = Math.floor(diff / (1000 * 60));
-            if (minutes == 0) {
-              document.write("just now");
-            } else {
-              document.write(minutes + " minutes ago");
-            }
-          } else {
-            document.write(hours + " hours ago");
-          }
+<p>
+  Posted
+  <script>
+    var dateposted = new Date("{{ listing.dateposted }}");
+    var currentdate = new Date();
+    var diff = currentdate - dateposted;
+    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    var hours = Math.floor(diff / (1000 * 60 * 60));
+    if (days == 0) {
+      if (hours == 0) {
+        var minutes = Math.floor(diff / (1000 * 60));
+        if (minutes == 0) {
+          document.write("just now");
         } else {
-          document.write(days + " days ago");
+          document.write(minutes + " minutes ago");
         }
-      </script>
-      by <a href="/user/{{ sellerusername }}">{{ sellerusername }}</a>
-    </p>
-    <p>{{ listing.description }}</p>
-    <script>
-      if ("{{ current_user.username }}" != "{{ sellerusername }}") {
-        document.write(
-          `<form action="/message-seller/{{ listing.id }}">
-            <input type="submit" value="Message Seller" />
-          </form>`
-        );
+      } else {
+        document.write(hours + " hours ago");
       }
-    </script>
-  </body>
-</html>
+    } else {
+      document.write(days + " days ago");
+    }
+  </script>
+  by <a href="/user/{{ sellerusername }}">{{ sellerusername }}</a>
+</p>
+<p>{{ listing.description }}</p>
+<script>
+  console.log("chat id: {{ chat.chat_id }}");
+  if (
+    "{{ current_user.username }}" != "{{ sellerusername }}" &&
+    "{{chat.chat_id}}" == ""
+  ) {
+    document.write(
+      `<form action="/message-seller/{{ listing.id }}" method="post">
+            <label for="message">Message:</label>
+            <textarea id="message" name="message">Hi {{ sellerusername }}, is this still available?</textarea><br /><br />
+            <input type="submit" value="Send Message" />
+          </form>`
+    );
+  } else if ("{{chat.chat_id}}" != "") {
+    document.write(
+      `<form action="/chat/{{ chat.chat_id }}">
+            <input type="submit" value="Go to Chat " />
+          </form>`
+    );
+  }
+</script>
+{% endblock %}

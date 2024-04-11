@@ -1,28 +1,21 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ user.username }}'s profile</title>
-  </head>
-  <body>
-    {% include 'header.html' %}
-    <h2>{{ user.username }}'s profile</h2>
-    <p>Email: {{ user.email }}</p>
-    <h1>
-      <script>
-        if ("{{ user.username }}" == "{{ current_user.username }}") {
-          document.write("My Listings");
-        } else {
-          document.write("{{ user.username }}'s Listings");
-        }
-      </script>
-    </h1>
-    <ul>
-      {% for listing in listings %}
-      <li>
-        <a href="/listing/{{ listing.id }}">{{ listing.name }}</a>- ${{
-        listing.price }}
-      </li>
-      {% endfor %}
-    </ul>
-  </body>
-</html>
+{% extends 'base.html' %} {% block title %} {{ user.username }} | HawkSwap {%
+endblock %} {% block content %}
+<h2>{{ user.username }}'s profile</h2>
+<p>Email: {{ user.email }}</p>
+<h2>
+  <script>
+    if ("{{ user.username }}" == "{{ current_user.username }}") {
+      document.write("My Listings");
+    } else {
+      document.write("{{ user.username }}'s Listings");
+    }
+  </script>
+</h2>
+{% for listing in listings %}
+<div class="listing">
+  <a href="/listing/{{ listing.id }}">{{ listing.name }}</a>- ${{ listing.price
+  }}
+</div>
+{% endfor %} {% if not listings %}
+<p>No listings found.</p>
+{% endif %} {% endblock %}

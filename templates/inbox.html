@@ -1,52 +1,54 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>HawkSwap | Inbox</title>
-  </head>
-  <body>
-    {% include 'header.html' %}
-    <ul>
-      {% for chat in chats %}
-      <li>
-        <a href="/chat/{{ chat.chat_id }}">{{ chat.name }}</a> -
-        <script>
-          if ("{{chat.unread_count}}" > "0") {
-            document.write(
-              "<b>{{chat.message_content }}</b> ({{chat.unread_count}} unread messages)"
-            );
-          } else {
-            document.write("{{chat.message_content }}");
-          }
-        </script>
-        -
-        <script>
-          var dateposted = new Date("{{ chat.sent_at }}");
-          var currentdate = new Date();
-          var diff = currentdate - dateposted;
-          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          var hours = Math.floor(diff / (1000 * 60 * 60));
-          if (days == 0) {
-            if (hours == 0) {
-              var minutes = Math.floor(diff / (1000 * 60));
-              if (minutes == 0) {
-                document.write("just now");
-              } else {
-                document.write(minutes + " minutes ago");
-              }
-            } else {
-              document.write(hours + " hours ago");
-            }
-          } else {
-            document.write(days + " days ago");
-          }
-        </script>
-      </li>
-      {% endfor %}
-    </ul>
+{% extends 'base.html' %} {% block title %}Saved | HawkSwap{% endblock %} {%
+block content %}
+<h2>Inbox</h2>
+<ul>
+  {% for chat in chats %}
+  <li>
+    <a href="/chat/{{ chat.chat_id }}">{{ chat.name }}</a><br />
     <script>
-      if ("{{ chats }}" == "[]") {
-        document.write("No messages yet.");
+      if ("{{chat.username}}" == "{{current_user.username}}") {
+        document.write("You: ");
+      } else {
+        document.write("{{chat.username}}: ");
       }
     </script>
-  </body>
-</html>
+    <script>
+      if ("{{chat.unread_count}}" > "0") {
+        document.write(
+          "<b>{{chat.message_content }} ({{chat.unread_count}} unread messages)</b>"
+        );
+      } else {
+        document.write("{{chat.message_content }}");
+      }
+    </script>
+    -
+    <script>
+      var dateposted = new Date("{{ chat.sent_at }}");
+      var currentdate = new Date();
+      var diff = currentdate - dateposted;
+      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var hours = Math.floor(diff / (1000 * 60 * 60));
+      if (days == 0) {
+        if (hours == 0) {
+          var minutes = Math.floor(diff / (1000 * 60));
+          if (minutes == 0) {
+            document.write("just now");
+          } else {
+            document.write(minutes + " minutes ago");
+          }
+        } else {
+          document.write(hours + " hours ago");
+        }
+      } else {
+        document.write(days + " days ago");
+      }
+    </script>
+  </li>
+  {% endfor %}
+</ul>
+<script>
+  if ("{{ chats }}" == "[]") {
+    document.write("No messages yet.");
+  }
+</script>
+{% endblock %}

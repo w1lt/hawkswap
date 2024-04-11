@@ -1,29 +1,32 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ listing.name }} | Edit</title>
-  </head>
-  <body>
-    {% include 'header.html' %}
-    <h2>Edit Listing</h2>
-    <form action="/listing/{{ listing.id }}/edit" method="post">
-      <label for="name">Listing Name:</label>
-      <input type="text" id="name" name="name" value="{{ listing.name }}" required /><br /><br />
-      <label for="description">Description:</label>
-      <textarea id="description" name="description">{{ listing.description }}</textarea><br /><br />
-      <label for="price">Price:</label>
-      <input
-        type="number"
-        id="price"
-        name="price"
-        step="0.01"
-        value="{{ listing.price }}"
-        required
-      /><br /><br />
-      <input type="submit" value="Edit Listing" />
-    </form>
-    <br><br>
-    <form action="/listing/{{ listing.id }}/delete" method="post">
-      <input type="submit" value="Delete Listing" />
-  </body>
-</html>
+{% extends 'base.html' %} {% block title %}Saved | HawkSwap{% endblock %} {%
+block content %}
+<h2>Edit Listing</h2>
+<form action="/listing/{{ listing.id }}/edit" method="post">
+  <label for="name">Listing Name:</label>
+  <input
+    type="text"
+    id="name"
+    name="name"
+    value="{{ listing.name }}"
+    required
+  /><br /><br />
+  <label for="description">Description:</label>
+  <textarea id="description" name="description">
+{{ listing.description }}</textarea
+  ><br /><br />
+  <label for="price">Price:</label>
+  <input
+    type="number"
+    id="price"
+    name="price"
+    step="0.01"
+    value="{{ listing.price }}"
+    required
+  /><br /><br />
+  <input type="submit" value="Edit Listing" />
+</form>
+<br /><br />
+<form action="/listing/{{ listing.id }}/delete" method="post">
+  <input type="submit" value="Delete Listing" />
+</form>
+{% endblock %}

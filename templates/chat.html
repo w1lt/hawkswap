@@ -1,45 +1,64 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>HawkSwap | Inbox</title>
-  </head>
-  <body>
-    {% include 'header.html' %}
-    <ul>
-      {% for message in messages %}
-      <li>
-        <script>
-       username =  "{{ message.username }}";
-       if (username == "{{ current_user.username }}") {
-         document.write("You: ");
-       } else {
-         document.write(username + ": ");
-       }
+{% extends 'base.html' %} {% block title %}Home | HawkSwap{% endblock %} {%
+block content %}
+<ul id="message-list">
+  {% for message in messages %}
+  <li>
+    <script>
+      username = "{{ message.username }}";
+      if (username == "{{ current_user.username }}") {
+        document.write("You: ");
+      } else {
+        document.write(username + ": ");
+      }
     </script>
-        
-        {{ message.message_content }}
+    {{ message.message_content }}
+    <script>
+      if (
+        "{{message.read_status}}" == "0" &&
+        "{{message.username}}" == "{{current_user.username}}"
+      ) {
+        document.write(" (Not seen yet)");
+      }
+    </script>
+  </li>
+  {% endfor %}
+</ul>
+<form action="" method="post">
+  <label for="message">Message:</label>
+  <input type="text" id="message" name="message" required /><br /><br />
+  <input type="submit" value="Send" />
 
-        <script>
-
-            if ("{{message.read_status}}" == "0"
-            //and the message sender_id is the current user
-            && "{{message.username}}" == "{{current_user.username}}"
+  <script>
+    function fetchMessages() {
+      console.log("/get_messages/{{ chat_id }}");
+      fetch("/get_messages/{{ chat_id }}")
+        .then((response) => response.json())
+        .then((data) => {
+          let messageList = document.getElementById("message-list");
+          messageList.innerHTML = ""; // Clear existing messages
+          data.forEach((message) => {
+            let li = document.createElement("li");
+            let messageText =
+              (message.username == "{{ current_user.username }}"
+                ? "You: "
+                : message.username + ": ") + message.message_content;
+            if (
+              message.read_status == "0" &&
+              message.username == "{{ current_user.username }}"
             ) {
-                document.write(" (Not seen yet)");
+              messageText += " (Not seen yet)";
             }
-            else {
-                //nothing
-            }
-        </script>
+            li.textContent = messageText;
+            messageList.appendChild(li);
+          });
+        });
+    }
+    // Fetch messages every 5 seconds
+    setInterval(fetchMessages, 3000);
 
-       
+    // Fetch messages when the page loads
+    document.addEventListener("DOMContentLoaded", fetchMessages);
+  </script>
 
-        {% endfor %}
-      </li>
-    </ul>
-    <form action="" method="post">
-      <label for="message">Message:</label>
-      <input type="text" id="message" name="message" required /><br /><br />
-      <input type="submit" value="Send" />
-  </body>
-</html>
+  {% endblock %}
+</form>
