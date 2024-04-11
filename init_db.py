@@ -18,6 +18,7 @@ def create_tables(conn):
             name TEXT NOT NULL,
             description TEXT,
             price REAL NOT NULL,
+            image_path TEXT,
             dateposted TEXT NOT NULL,
             seller_id INTEGER NOT NULL,
             FOREIGN KEY (seller_id) REFERENCES users(id)

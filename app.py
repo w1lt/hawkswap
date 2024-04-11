@@ -1,13 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import datetime
-import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask import jsonify
+from flask import request, redirect, url_for
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -276,17 +280,25 @@ def create_listing():
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
-        price = (request.form['price'])
+        price = request.form['price']
         date_posted = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         seller = str(current_user.id)
 
+        # Handle image upload
+        image = request.files['image']
+        if image:
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+            image.save(image_path)
+
         conn = get_db_connection()
-        conn.execute('INSERT INTO listings (name, description, price, dateposted, seller_id) VALUES (:name, :description, :price, :date_posted, :seller)', {'name': name, 'description': description, 'price': price, 'date_posted': date_posted, 'seller': seller})
+        conn.execute('INSERT INTO listings (name, description, price, dateposted, seller_id, image_path) VALUES (:name, :description, :price, :date_posted, :seller, :image_path)', {'name': name, 'description': description, 'price': price, 'date_posted': date_posted, 'seller': seller, 'image_path': image_path})
         conn.commit()
         conn.close()
 
         return redirect(url_for('index'))
     return render_template('create_listing.html')
+
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
@@ -353,4 +365,4 @@ def unread_message_count():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='10.107.115.135', port=5000)

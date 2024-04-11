@@ -1,5 +1,6 @@
 body {
   font-family: Arial, sans-serif;
+  font-size: 1rem;
   margin: 0;
   padding: 0;
 }
@@ -46,6 +47,18 @@ nav {
 
 main {
   padding: 20px;
+}
+
+.listing img {
+  border-radius: 5%;
+  width: 200px;
+  height: 200px;
+}
+
+.listing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* save listing stles */

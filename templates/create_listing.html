@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block title %}Create Listing | HawkSwap{% endblock
 %} {% block content %}
 <h2>Create a New Listing</h2>
-<form action="/create-listing" method="post">
+<form action="/create-listing" method="post" enctype="multipart/form-data">
   <label for="name">Listing Name:</label>
   <input type="text" id="name" name="name" required /><br /><br />
   <label for="description">Description:</label>
@@ -14,6 +14,8 @@
     step="0.01"
     required
   /><br /><br />
+  <label for="image">Image:</label>
+  <input type="file" name="image" id="image" /> <br /><br />
   <input type="submit" value="Create Listing" />
 </form>
 {% endblock %}

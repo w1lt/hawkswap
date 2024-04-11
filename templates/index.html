@@ -18,6 +18,7 @@ block content %}
 {% for listing in listings %}
 <div class="listing">
   <b>
+    <img src="{{ listing.image_path }}" alt="{{ listing.name }}" />
     <script>
       var price = "{{ listing.price }}";
       price = Math.round(price);
