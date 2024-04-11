@@ -16,16 +16,21 @@ block content %}
 <h2>All Listings</h2>
 
 {% for listing in listings %}
+
 <div class="listing">
+  <a href="/listing/{{ listing.id }}">
   <b>
     <img src="{{ listing.image_path }}" alt="{{ listing.name }}" />
+    <div>
     <script>
       var price = "{{ listing.price }}";
       price = Math.round(price);
       document.write("$" + price);
     </script>
+    
   </b>
-  <a href="/listing/{{ listing.id }}">{{ listing.name }}</a> ·
+</div>
+  {{ listing.name }} 
   <script>
     var dateposted = new Date("{{ listing.dateposted }}");
     var currentdate = new Date();
@@ -47,5 +52,7 @@ block content %}
       document.write(days + " days ago");
     }
   </script>
+</a>
 </div>
+
 {% endfor %} {% endblock %}

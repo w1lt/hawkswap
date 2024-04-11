@@ -27,11 +27,6 @@ header a {
   cursor: pointer;
 }
 
-.listing {
-  list-style-type: none;
-  padding: 5px;
-}
-
 header,
 footer {
   background-color: #f4f4f4;
@@ -58,7 +53,16 @@ main {
 .listing {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  list-style-type: none;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+}
+
+.listing a {
+  text-decoration: none !important;
+  color: black;
 }
 
 /* save listing stles */
