@@ -44,10 +44,15 @@ main {
   padding: 20px;
 }
 
-.listing img {
+img {
   border-radius: 5%;
   width: 200px;
   height: 200px;
+}
+
+.sold-tag {
+  background-color: red;
+  color: white;
 }
 
 .listings-grid {
@@ -71,7 +76,7 @@ main {
   opacity: 0.5;
 }
 
-.listing {
+.listing a {
   display: flex;
   flex-direction: column;
   list-style-type: none;
@@ -79,6 +84,14 @@ main {
   text-align: center;
   text-decoration: none;
   color: black;
+  border: 1px solid #dadada;
+  border-radius: 5px;
+}
+
+.listing-date {
+  margin-top: 10px;
+
+  opacity: 0.6;
 }
 
 .listing a {

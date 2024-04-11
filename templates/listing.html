@@ -6,6 +6,10 @@ block content %}
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
   />
 </head>
+<img
+  src="{{ url_for('static', filename=listing.image_path) }}"
+  alt="{{ listing.name }}"
+/>
 <div class="listing-title">
   <h1>{{ listing.name }} - ${{ listing.price }}</h1>
 
@@ -42,7 +46,8 @@ block content %}
   }
 </script>
 
-<p>
+<p>{{ listing.description }}</p>
+<div class="listing-date">
   Posted
   <script>
     var dateposted = new Date("{{ listing.dateposted }}");
@@ -66,8 +71,7 @@ block content %}
     }
   </script>
   by <a href="/user/{{ sellerusername }}">{{ sellerusername }}</a>
-</p>
-<p>{{ listing.description }}</p>
+</div>
 <script>
   console.log("chat id: {{ chat.chat_id }}");
   if (
