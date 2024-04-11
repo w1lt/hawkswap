@@ -14,7 +14,11 @@
         </script>
       </b>
     </div>
-    {{ listing.name }}
+    <div>
+      {{ listing.name }} {% if listing.is_sold %}
+      <span class="sold-tag">SOLD</span>
+      {% endif %}
+    </div>
     <div class="listing-date">
       <script>
         var dateposted = new Date("{{ listing.dateposted }}");
@@ -37,9 +41,6 @@
           document.write(days + " days ago");
         }
       </script>
-      {% if listing.is_sold %}
-      <span class="sold-tag">SOLD</span>
-      {% endif %}
     </div>
   </a>
 </div>

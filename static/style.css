@@ -88,12 +88,6 @@ img {
   border-radius: 5px;
 }
 
-.listing-date {
-  margin-top: 10px;
-
-  opacity: 0.6;
-}
-
 .listing a {
   text-decoration: none !important;
   color: black;

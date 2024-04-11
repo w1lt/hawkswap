@@ -50,9 +50,11 @@ def shutdown_session(exception=None):
 def show_user_profile(username):
     conn = get_db_connection()
     user = conn.execute("SELECT * FROM users WHERE username = :username", {'username': username}).fetchone()
-    listings = conn.execute("SELECT * FROM listings WHERE seller_id = :seller_id", {'seller_id': user['id']}).fetchall()
+    # Sort listings by 'is_sold' (unsold first) and then by 'dateposted' (most recent first)
+    listings = conn.execute("SELECT * FROM listings WHERE seller_id = :seller_id ORDER BY is_sold ASC, dateposted DESC", {'seller_id': user['id']}).fetchall()
     conn.close()
     return render_template('userpage.html', user=user, listings=listings)
+
 
 @app.route('/listing/<id>')
 @login_required
@@ -179,7 +181,7 @@ def message_seller(listing_id):
     conn = get_db_connection()
     listing = conn.execute("SELECT * FROM listings WHERE id = :id", {'id': listing_id}).fetchone()
     seller_id = listing['seller_id']
-    #if there is already a chat between the buyer and the seller, get the chat id and redirect to the chat page
+    # if there is already a chat between the buyer and the seller, get the chat id and redirect to the chat page
     chat = conn.execute("""
         SELECT c.chat_id
         FROM chats c
@@ -194,15 +196,15 @@ def message_seller(listing_id):
     if request.method == 'POST':
         message_content = request.form['message']
         sender_id = current_user.id
-        datetime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         conn = get_db_connection()
         chat = conn.execute("""
             SELECT c.chat_id
             FROM chats c
-             WHERE (listing_id = :listing_id AND seller_id = :seller_id AND buyer_id = :buyer_id) OR (listing_id = :listing_id AND seller_id = :buyer_id AND buyer_id = :seller_id)
-    """, {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': current_user.id}).fetchone()
+            WHERE (listing_id = :listing_id AND seller_id = :seller_id AND buyer_id = :buyer_id) OR (listing_id = :listing_id AND seller_id = :buyer_id AND buyer_id = :seller_id)
+        """, {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': current_user.id}).fetchone()
         if not chat:
-            conn.execute("INSERT INTO chats (listing_id, seller_id, buyer_id, created_at) VALUES (:listing_id, :seller_id, :buyer_id, :created_at)", {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': sender_id, 'created_at': datetime})
+            conn.execute("INSERT INTO chats (listing_id, seller_id, buyer_id, created_at) VALUES (:listing_id, :seller_id, :buyer_id, :created_at)", {'listing_id': listing_id, 'seller_id': seller_id, 'buyer_id': sender_id, 'created_at': current_time})
             chat_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
         else:
             chat_id = chat['chat_id']
@@ -211,6 +213,7 @@ def message_seller(listing_id):
         conn.close()
         return redirect(url_for('index'))
     return render_template('message_seller.html', listing=listing)
+
 
 @app.route('/chat/<chat_id>', methods=['GET', 'POST'])
 @login_required
