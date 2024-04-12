@@ -5,8 +5,14 @@ block content %}
 <div id="message-list"></div>
 
 <form id="message-form">
-  <label for="message">Message:</label>
-  <input type="text" id="message" name="message" autofocus required />
+  <input
+    type="text"
+    id="message"
+    name="message"
+    autofocus
+    required
+    autocomplete="off"
+  />
   <button type="button" id="chatbox" onclick="sendMessage()">Send</button>
   <script>
     document.getElementById("message-form").addEventListener("submit", (e) => {
@@ -14,6 +20,11 @@ block content %}
     });
     document.getElementById("message").addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
+        //if message is blank, do nothing
+        if (document.getElementById("message").value == "") {
+          return;
+        }
+        e.preventDefault();
         sendMessage();
       }
     });
@@ -27,16 +38,47 @@ block content %}
       .then((data) => {
         let messageList = document.getElementById("message-list");
         messageList.innerHTML = ""; // Clear existing messages
-        data.forEach((message) => {
+
+        // Determine the last message index sent by the current user
+        let lastSentMessageIndex = -1;
+        data.forEach((message, index) => {
+          if (message.username == "{{ current_user.username }}") {
+            lastSentMessageIndex = index;
+          }
+        });
+
+        data.forEach((message, index) => {
           let li = document.createElement("li");
           li.className =
             message.username == "{{ current_user.username }}"
               ? "message user-message"
               : "message";
-          li.textContent =
+
+          let messageContent = document.createElement("span");
+          messageContent.textContent =
             (message.username == "{{ current_user.username }}"
               ? ""
               : message.username + ": ") + message.message_content;
+          li.appendChild(messageContent);
+
+          // Append status indicator only to the latest message sent by the current user
+          if (index === lastSentMessageIndex) {
+            let statusIndicator = document.createElement("span");
+            statusIndicator.style.marginLeft = "10px"; // Add some space between the message and the status
+
+            if (message.read_status) {
+              let checkIcon = document.createElement("i");
+              checkIcon.className = "fas fa-check"; // Font Awesome check icon
+              checkIcon.style.color = "green"; // Color the icon
+              statusIndicator.appendChild(checkIcon);
+            } else {
+              statusIndicator.textContent = "sent";
+              statusIndicator.style.color = "gray"; // Color the text
+            }
+
+            li.appendChild(statusIndicator);
+          }
+
           messageList.appendChild(li);
         });
       });
@@ -64,12 +106,12 @@ block content %}
   }
 
   // Fetch messages every 5 seconds
-  setInterval(fetchMessages, 5000);
+  setInterval(fetchMessages, 3000);
 
   // Fetch messages when the page loads
   document.addEventListener("DOMContentLoaded", fetchMessages);
   //wait half a second and scroll to the bottom of the chat
-  setTimeout(scrollToChat, 500);
+  setTimeout(scrollToChat, 100);
 </script>
 
 {% endblock %}

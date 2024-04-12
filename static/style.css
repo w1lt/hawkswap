@@ -199,10 +199,12 @@ p {
 .user-message {
   background-color: lightblue;
   text-align: right;
+  margin-left: 40%;
 }
 
 .message:not(.user-message) {
   background-color: lightgrey;
+  margin-right: 40%;
 }
 
 .listing-text {
