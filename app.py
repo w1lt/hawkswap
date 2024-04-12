@@ -1,10 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from flask import jsonify
-from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 import pytz
@@ -272,14 +270,15 @@ def chat(chat_id):
     conn.close()
 
     if request.method == 'POST':
-        message_content = request.form['message']
+        data = request.get_json()
+        message_content = data['message']
         sender_id = current_user.id
         sent_at = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
         conn = get_db_connection()
         conn.execute('INSERT INTO messages (chat_id, sender_id, message_content, sent_at) VALUES (:chat_id, :sender_id, :message_content, :sent_at)', {'chat_id': chat_id, 'sender_id': sender_id, 'message_content': message_content, 'sent_at': sent_at})
         conn.commit()
         conn.close()
-        return redirect(url_for('chat', chat_id=chat_id))
+        return '', 204  # Return an empty response for AJAX
     return render_template('chat.html', messages=messages, chat_id=chat_id, listing_name=listing_info['listing_name'], price=listing_info['price'])
 
 @app.route('/get_messages/<chat_id>', methods=['GET'])

@@ -158,9 +158,9 @@ p {
   text-align: left;
   padding-bottom: 10px;
   text-transform: none;
-  border-radius: 5px;
-  padding: 5px;
   list-style: none;
+  width: 80%;
+  align-self: center;
 }
 
 .auth-container {
@@ -193,6 +193,16 @@ p {
   padding: 5px;
   margin: 5px;
   background-color: #f4f4f4;
+  word-wrap: break-word;
+}
+
+.user-message {
+  background-color: lightblue;
+  text-align: right;
+}
+
+.message:not(.user-message) {
+  background-color: lightgrey;
 }
 
 .listing-text {

@@ -1,76 +1,75 @@
-{% extends 'base.html' %} {% block title %}Home | HawkSwap{% endblock %} {%
+{% extends 'base.html' %} {% block title %}Chat | HawkSwap{% endblock %} {%
 block content %}
 
-<h2>
-  {{listing_name}} - ${{price}}
-  </h2> 
-  <div id="message-list">
-    {% for message in messages %}
-    <li class="message">
-      <script>
-        username = "{{ message.username }}";
-        if (username == "{{ current_user.username }}") {
-          document.write("You: ");
-        } else {
-          document.write(username + ": ");
-        }
-      </script>
-      {{ message.message_content }}
-      <script>
-        if (
-          "{{message.read_status}}" == "0" &&
-          "{{message.username}}" == "{{current_user.username}}"
-        ) {
-          document.write(" (Not seen yet)");
-        }
-      </script>
-    </li>
-    {% endfor %}
-  </div>
-  <form action="" method="post">
-    <label for="message">Message:</label>
-    <input
-      type="text"
-      id="message"
-      name="message"
-      autofocus
-      required
-    />
-    <input type="submit" value="Send" />
+<h2>{{listing_name}} - ${{price}}</h2>
+<div id="message-list"></div>
 
-    <script>
-      function fetchMessages() {
-        console.log("/get_messages/{{ chat_id }}");
-        fetch("/get_messages/{{ chat_id }}")
-          .then((response) => response.json())
-          .then((data) => {
-            let messageList = document.getElementById("message-list");
-            messageList.innerHTML = ""; // Clear existing messages
-            data.forEach((message) => {
-              let li = document.createElement("li");
-              li.className = "message";
-              let messageText =
-                (message.username == "{{ current_user.username }}"
-                  ? "You: "
-                  : message.username + ": ") + message.message_content;
-              if (
-                message.read_status == "0" &&
-                message.username == "{{ current_user.username }}"
-              ) {
-                messageText += " (Not seen yet)";
-              }
-              li.textContent = messageText;
-              messageList.appendChild(li);
-            });
-          });
+<form id="message-form">
+  <label for="message">Message:</label>
+  <input type="text" id="message" name="message" autofocus required />
+  <button type="button" id="chatbox" onclick="sendMessage()">Send</button>
+  <script>
+    document.getElementById("message-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+    });
+    document.getElementById("message").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        sendMessage();
       }
-      // Fetch messages every 5 seconds
-      setInterval(fetchMessages, 3000);
+    });
+  </script>
+</form>
 
-      // Fetch messages when the page loads
-      document.addEventListener("DOMContentLoaded", fetchMessages);
-    </script>
+<script>
+  function fetchMessages() {
+    fetch("/get_messages/{{ chat_id }}")
+      .then((response) => response.json())
+      .then((data) => {
+        let messageList = document.getElementById("message-list");
+        messageList.innerHTML = ""; // Clear existing messages
+        data.forEach((message) => {
+          let li = document.createElement("li");
+          li.className =
+            message.username == "{{ current_user.username }}"
+              ? "message user-message"
+              : "message";
+          li.textContent =
+            (message.username == "{{ current_user.username }}"
+              ? ""
+              : message.username + ": ") + message.message_content;
+          messageList.appendChild(li);
+        });
+      });
+  }
 
-    {% endblock %}
-  </form>
-</h2>
+  function scrollToChat() {
+    var element = document.getElementById("chatbox");
+    element.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function sendMessage() {
+    let messageInput = document.getElementById("message");
+    let message = messageInput.value;
+    messageInput.value = ""; // Clear the input after sending
+    fetch("/chat/{{ chat_id }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: message }),
+    }).then(() => {
+      fetchMessages(); // Refresh messages
+    });
+    scrollToChat();
+  }
+
+  // Fetch messages every 5 seconds
+  setInterval(fetchMessages, 5000);
+
+  // Fetch messages when the page loads
+  document.addEventListener("DOMContentLoaded", fetchMessages);
+  //wait half a second and scroll to the bottom of the chat
+  setTimeout(scrollToChat, 500);
+</script>
+
+{% endblock %}
