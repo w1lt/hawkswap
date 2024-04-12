@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block title %}Saved | HawkSwap{% endblock %} {%
 block content %}
 <h2>Edit Listing</h2>
-<form action="/listing/{{ listing.id }}/edit" method="post" class="edit-form">
+<form action="/listing/{{ listing.id }}/edit" method="post" class="edit-form" enctype="multipart/form-data">
   <label for="name">Listing Name:</label>
   <input
     type="text"
@@ -9,11 +9,11 @@ block content %}
     name="name"
     value="{{ listing.name }}"
     required
-  /><br /><br />
+  />
   <label for="description">Description:</label>
   <textarea id="description" name="description">
 {{ listing.description }}</textarea
-  ><br /><br />
+  >
   <label for="price">Price:</label>
   <input
     type="number"
@@ -22,10 +22,10 @@ block content %}
     step="0.01"
     value="{{ listing.price }}"
     required
-  /><br /><br />
+  />
   <label for="image">Image:</label>
-  <input type="file" name="image" id="image" /> <br /><br />
-  <input type="submit" value="Edit Listing" />
+  <input type="file" name="image" id="image" /> 
+  <button type="submit">Save Changes</button>
 </form>
 
 <br />

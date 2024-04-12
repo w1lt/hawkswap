@@ -7,7 +7,12 @@
   </head>
   <body>
     <main>
-      <div class="auth-container">{% block content %} {% endblock %}</div>
+      <img
+        src="{{ url_for('static', filename='hawkswap.png') }}"
+        alt=""
+        style="align-self: center"
+      />
+      {% block content %} {% endblock %}
     </main>
 
     {% include 'footer.html' %}

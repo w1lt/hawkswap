@@ -1,19 +1,28 @@
 <header>
   <div class="left">
-    <a href="/">Home</a>
+    <a href="/"><img
+      class="hawkswap-logo"
+      src="{{ url_for('static', filename='hawkswap.png') }}"
+    /></i> </a>
   </div>
   <div class="center">
-    <a href="/search">Search</a>
-    <a href="/inbox">Inbox</a>
-    <script>
-      if ("{{ unread_count }}" > "0") {
-        document.write("({{ unread_count }})");
-      }
-    </script>
-    <a href="/saved-listings">Saved</a>
-    <a href="/create-listing">Create Listing</a>
+    <a href="/search"><i class="fa fa-search"></i> Search</a>
+    <a href="/inbox"
+      ><i class="fa fa-envelope"></i> Inbox
+      <script>
+        if ("{{ unread_count }}" > "0") {
+          document.write(" ({{ unread_count }})");
+        }
+      </script>
+    </a>
+    <a href="/saved-listings"><i class="fa fa-heart"></i> Saved</a>
+    <a href="/create-listing"
+      ><i class="fa fa-plus-circle"></i>Create Listing</a
+    >
   </div>
   <div class="right">
-    <a href="/user/{{ current_user.username }}">My Profile</a>
+    <a href="/user/{{ current_user.username }}"
+      ><i class="fa fa-user"></i> Profile</a
+    >
   </div>
 </header>

@@ -1,3 +1,84 @@
+@media only screen and (max-width: 768px) {
+  main,
+  .auth-container,
+  .new-listing-form,
+  .edit-form {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  header,
+  footer {
+    padding: 5px;
+  }
+
+  .chat-container,
+  .message,
+  .listing-text {
+    padding: 5px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  header a,
+  button {
+    padding: 10px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 2rem; /* Larger font size for better readability */
+  }
+}
+
+a .hawkswap-logo {
+  width: 100%; /* Make width responsive to the container size */
+  height: auto; /* Maintain aspect ratio */
+  max-width: 60px; /* Set a max-width if necessary */
+}
+
+@media only screen and (max-width: 768px) {
+  .edit-buttons,
+  .listing {
+    flex-direction: column;
+  }
+
+  .listings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+.hawkswap-logo {
+  width: 100%; /* Make width responsive to the container size */
+  height: auto; /* Maintain aspect ratio */
+  max-width: 60px; /* Set a max-width if necessary */
+}
+
+@media (max-width: 768px) {
+  .hawkswap-logo {
+    max-width: 40px; /* Smaller logo for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .hawkswap-logo {
+    max-width: 30px; /* Even smaller logo for mobile devices */
+  }
+}
+
+/* end of media queries */
+
+html {
+  font-size: 16px; /* Standard base size for desktop */
+}
+
 body {
   font-family: Arial, sans-serif;
   font-size: 1rem;
@@ -14,7 +95,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 800px;
+  max-width: 70%;
   padding: 20px;
 }
 
@@ -22,9 +103,16 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: left;
-  border: 1px solid #933131;
   border-radius: 5px;
   padding: 10px;
+}
+
+h1 {
+  font-size: 2rem; /* 32px if base is 16px */
+}
+
+p {
+  font-size: 1rem; /* 16px */
 }
 
 .chat-preview {
@@ -55,7 +143,6 @@ main {
   justify-content: left;
   text-align: left;
   padding-bottom: 10px;
-
   text-transform: none;
   border-radius: 5px;
   padding: 5px;
@@ -116,18 +203,9 @@ main {
   padding: 2px;
 }
 
-.submit-button {
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  padding-bottom: 5px;
-}
-
 header,
 footer {
   background-color: #f4f4f4;
-  padding: 10px;
   text-align: center;
 }
 
@@ -136,7 +214,9 @@ header {
   justify-content: space-between;
   align-items: center;
   background-color: #f4f4f4;
-  padding: 10px;
+  padding: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
   text-align: center;
   position: sticky;
 }
@@ -148,7 +228,8 @@ header .left {
 
 header .center {
   display: flex;
-  justify-content: center;
+  width: 30%;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -158,12 +239,27 @@ header .right {
 }
 
 header a {
-  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   padding: 5px;
-  margin: 5px;
-  background-color: #dadada;
   text-decoration: none;
   color: black;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+header a:hover {
+  background-color: #333;
+  color: white;
+}
+
+.noacc {
+  text-decoration: none;
+  color: black;
+  padding-top: 10px;
 }
 
 nav {
@@ -186,7 +282,7 @@ img {
 .listings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 5px;
+  gap: 50px;
 }
 
 .edit-form {
@@ -195,6 +291,7 @@ img {
   justify-content: left;
   text-align: left;
   align-self: center;
+  gap: 10px;
   padding-bottom: 10px;
   width: 50%;
 }
@@ -232,11 +329,16 @@ button {
   text-align: center;
   text-decoration: none;
   color: black;
+  transition: background-color 0.3s;
 }
 
 .listing-date {
   opacity: 0.6;
-  padding-top: 10px;
+  padding-top: 5px;
+}
+
+.listing img {
+  border: 0.5px solid grey;
 }
 
 footer {
@@ -257,17 +359,16 @@ footer {
   display: flex;
   flex-direction: column;
   list-style-type: none;
-  padding: 5px;
   text-align: center;
   text-decoration: none;
   color: black;
-  border: 1px solid #dadada;
   border-radius: 5px;
-}
-
-.listing a {
   text-decoration: none !important;
   color: black;
+}
+
+.listing:hover {
+  background-color: #f4f4f4;
 }
 
 .listing-title {

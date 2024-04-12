@@ -44,6 +44,10 @@ def load_user(user_id):
 def shutdown_session(exception=None):
     db_session.remove()
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
+
 
 @app.route('/user/<username>')
 @login_required
@@ -80,17 +84,23 @@ def edit_listing(id):
     seller = conn.execute("SELECT * FROM users WHERE id = :id", {'id': listing['seller_id']}).fetchone()
     if current_user.id != seller['id']:
         return redirect(url_for('show_listing', id=id))
-    conn.close()
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
-        price = (request.form['price'])
-        conn = get_db_connection()
-        conn.execute('UPDATE listings SET name = :name, description = :description, price = :price WHERE id = :id', {'name': name, 'description': description, 'price': price, 'id': id})
+        price = request.form['price']
+        image = request.files['image']
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+            image.save(os.path.join(app.root_path, 'static', image_path))
+            conn.execute('UPDATE listings SET name = :name, description = :description, price = :price, image_path = :image_path WHERE id = :id', {'name': name, 'description': description, 'price': price, 'image_path': image_path, 'id': id})
+        else:
+            conn.execute('UPDATE listings SET name = :name, description = :description, price = :price WHERE id = :id', {'name': name, 'description': description, 'price': price, 'id': id})
         conn.commit()
         conn.close()
         return redirect(url_for('show_listing', id=id))
     return render_template('edit_listing.html', listing=listing, sellerusername=seller.username)
+
 
 @app.route('/listing/<id>/delete', methods=['POST'])
 @login_required
