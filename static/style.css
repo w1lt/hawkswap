@@ -22,21 +22,25 @@
     width: 100%;
     height: auto;
   }
-}
-
-@media only screen and (max-width: 768px) {
   header a,
   button {
     padding: 10px;
     min-width: 48px;
     min-height: 48px;
   }
+
+  input,
+  select,
+  button {
+    padding: 12px;
+    margin: 10px;
+    width: 90%; /* Make inputs take more screen width */
+    font-size: 16px; /* Larger font size for better readability */
+  }
 }
 
-@media only screen and (max-width: 768px) {
-  body {
-    font-size: 2rem; /* Larger font size for better readability */
-  }
+body {
+  font-size: 2rem; /* Larger font size for better readability */
 }
 
 a .hawkswap-logo {
@@ -86,6 +90,16 @@ body {
   padding: 0;
   padding-bottom: 40px;
   min-height: 100vh;
+}
+
+input,
+select,
+button {
+  padding: 8px;
+  margin: 5px;
+  width: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 main {
@@ -228,7 +242,7 @@ header .left {
 
 header .center {
   display: flex;
-  width: 30%;
+  width: 50%;
   justify-content: space-evenly;
   align-items: center;
 }
@@ -313,11 +327,15 @@ img {
 }
 
 button {
-  padding: 5px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  padding-bottom: 5px;
+  padding: 10px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #d0d0d0;
 }
 
 .listing {
@@ -349,6 +367,10 @@ footer {
   position: fixed;
   bottom: 0;
   width: 100%;
+}
+
+footer a {
+  color: black;
 }
 
 .names {

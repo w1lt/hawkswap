@@ -42,7 +42,7 @@ block content %}
 
   <p>{{ listing.description }}</p>
 
-  {% if chat.chat_id == "" and current_user.username != sellerusername %}
+  {% if not chat.chat_id and current_user.username != sellerusername %}
   <form action="/message-seller/{{ listing.id }}" method="post">
     <label for="message">Message:</label>
     <textarea
@@ -53,7 +53,7 @@ block content %}
     ><br /><br />
     <button type="submit">Message Seller</button>
   </form>
-  {% elif chat.chat_id != "" and current_user.username != sellerusername %}
+  {% elif chat.chat_id and current_user.username != sellerusername %}
   <form action="/chat/{{ chat.chat_id }}">
     <button type="submit">Go to Chat</button>
   </form>

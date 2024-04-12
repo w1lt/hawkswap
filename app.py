@@ -7,6 +7,8 @@ from flask import jsonify
 from flask import request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
+import pytz
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -20,6 +22,13 @@ login_manager.login_view = 'login'
 DATABASE_URI = 'sqlite:///marketplace.db'
 engine = create_engine(DATABASE_URI, connect_args={'timeout': 15})  # Set a 15-second timeout
 db_session = scoped_session(sessionmaker(bind=engine))
+
+# Function to get the current time in UTC
+def get_utc_now():
+    return datetime.datetime.now(pytz.utc)
+
+# When saving a datetime to the database, use get_utc_now()
+date_posted = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
 
 def get_db_connection():
     return db_session()
@@ -230,7 +239,7 @@ def message_seller(listing_id):
             chat_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
         else:
             chat_id = chat['chat_id']
-        sent_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sent_at = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
         conn.execute('INSERT INTO messages (chat_id, sender_id, message_content, sent_at) VALUES (:chat_id, :sender_id, :message_content, :sent_at)', {'chat_id': chat_id, 'sender_id': sender_id, 'message_content': message_content, 'sent_at': sent_at})
         conn.commit()
         conn.close()
@@ -265,7 +274,7 @@ def chat(chat_id):
     if request.method == 'POST':
         message_content = request.form['message']
         sender_id = current_user.id
-        sent_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sent_at = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
         conn = get_db_connection()
         conn.execute('INSERT INTO messages (chat_id, sender_id, message_content, sent_at) VALUES (:chat_id, :sender_id, :message_content, :sent_at)', {'chat_id': chat_id, 'sender_id': sender_id, 'message_content': message_content, 'sent_at': sent_at})
         conn.commit()
@@ -329,7 +338,7 @@ def create_listing():
         name = request.form['name']
         description = request.form['description']
         price = request.form['price']
-        date_posted = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        date_posted = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
         seller = str(current_user.id)
 
         # Handle image upload
@@ -385,13 +394,19 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 @login_required
 def index():
     conn = get_db_connection()
     listings = conn.execute ('SELECT * FROM listings where is_sold = "0" ORDER BY dateposted DESC').fetchall()
     conn.close()
     return render_template('index.html', listings=listings)
+
+@app.route('/')
+def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 #get the number of unread messages and give that info to the header.html
 @app.context_processor
