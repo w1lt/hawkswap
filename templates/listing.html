@@ -45,11 +45,8 @@ block content %}
   {% if not chat.chat_id and current_user.username != sellerusername %}
   <form action="/message-seller/{{ listing.id }}" method="post">
     <label for="message">Message:</label>
-    <textarea
-      id="message"
-      name="message"
-      placeholder="Hi {{ sellerusername }}, is this still available?"
-    ></textarea
+    <textarea id="message" name="message" required>
+Hi {{ sellerusername }}, is this still available?</textarea
     ><br /><br />
     <button type="submit">Message Seller</button>
   </form>

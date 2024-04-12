@@ -54,6 +54,13 @@ def shutdown_session(exception=None):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    #redirect to 404 page
+    return render_template('404.html'), 404
+
+
 
 
 @app.route('/user/<username>')
