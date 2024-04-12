@@ -4,13 +4,19 @@ block content %}
 <div class="chat-container">
   {% for chat in chats %}
   <a href="/chat/{{ chat.chat_id }}" class="chat-preview">
-    <div>{{chat.seller_first_name}} | {{ chat.listing_name }}</div>
-    <span class="recent-message">{{ chat.message_content }}</span> {% if
-    chat.unread_count > 0 %}<span class="unread-message">
-      {{ chat.unread_count }} Unread Message</span
-    >{% endif %}
+    <img
+      class="inbox-img"
+      src="{{ url_for('static', filename=chat.image_path) }}"
+    />
+    <div style="max-width: 50%">
+      <div>{{chat.seller_first_name}} | {{ chat.listing_name }}</div>
+      <div class="recent-message">{{ chat.message_content }}</div>
+    </div>
 
     <div class="chat-time">
+      {% if chat.unread_count > 0 %}
+      <i class="fas fa-circle" style="color: blue; opacity: 0.65"></i>
+      {% endif %}
       <script>
         var utcDateString = "{{ chat.sent_at }}"; // Assuming this is in ISO format
         var postedDate = new Date(utcDateString);
@@ -28,13 +34,13 @@ block content %}
         if (diffDays > 0) {
           document.write(diffDays + " days ago");
         } else if (diffHours > 1) {
-          document.write(diffHours + " hours ago");
+          document.write(diffHours + " hrs ago");
         } else if (diffHours > 0) {
-          document.write(diffHours + " hour ago");
+          document.write(diffHours + " hr ago");
         } else if (diffMinutes > 1) {
-          document.write(diffMinutes + " minutes ago");
+          document.write(diffMinutes + " mins ago");
         } else if (diffMinutes > 0) {
-          document.write(diffMinutes + " minute ago");
+          document.write(diffMinutes + " min ago");
         } else {
           document.write("Just now");
         }

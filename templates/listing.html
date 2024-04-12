@@ -7,13 +7,13 @@ block content %}
   />
   <div class="listing-title">
     <h2>
-      {{ listing.name }} - $
+      {{ listing.name }} -
       <script>
         //round remoe decimal
         var price = "{{ listing.price }}"; // ex 123.0 to 123
         price = parseFloat(price);
         price = Math.round(price);
-        document.write(price);
+        document.write("$" + price);
       </script>
     </h2>
     {% if saved %}
@@ -52,11 +52,14 @@ block content %}
   <p>{{ listing.description }}</p>
 
   {% if not chat.chat_id and current_user.username != sellerusername %}
-  <form action="/message-seller/{{ listing.id }}" method="post">
-    <label for="message">Message:</label>
+  <form
+    action="/message-seller/{{ listing.id }}"
+    method="post"
+    class="message-form"
+  >
     <textarea id="message" name="message" required>
 Hi {{ sellerusername }}, is this still available?</textarea
-    ><br /><br />
+    >
     <button type="submit">Message Seller</button>
   </form>
   {% elif chat.chat_id and current_user.username != sellerusername %}

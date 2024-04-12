@@ -16,6 +16,11 @@
     width: 100%;
   }
 
+  .message-form {
+    display: flex;
+    flex-direction: column;
+  }
+
   header,
   footer {
     padding: 5px;
@@ -40,6 +45,7 @@
 
   input,
   select,
+  textarea,
   button {
     padding: 12px;
     margin: 10px;
@@ -101,7 +107,9 @@ body {
 
 input,
 select,
+textarea,
 button {
+  font-family: inherit;
   padding: 8px;
   margin: 5px;
   width: auto;
@@ -124,6 +132,8 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: left;
+  align-items: left;
+  text-align: left;
   border-radius: 5px;
   padding: 10px;
 }
@@ -140,14 +150,19 @@ p {
   text-decoration: none;
   color: black;
   display: flex;
-  flex-direction: column;
-  justify-content: left;
-  text-align: left;
+  flex-direction: row; /* Ensure horizontal layout */
+  align-items: center; /* Vertically center the content within each chat */
   padding-bottom: 10px;
-  text-decoration: none;
-  text-transform: none;
   border-radius: 5px;
   padding: 5px;
+  margin-bottom: 10px; /* Adds spacing between chat entries */
+}
+
+.inbox-img {
+  width: 50px; /* Adjust size as necessary */
+  height: 50px;
+  border-radius: 50%; /* Circular images */
+  margin-right: 10px; /* Space between the image and the text */
 }
 
 .chat-preview:hover {
@@ -156,6 +171,17 @@ p {
 .chat-time {
   font-size: 0.8rem;
   color: #666;
+  margin-left: auto; /* Push the time to the right */
+}
+
+.message-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: 0 auto;
+  width: 80%;
 }
 
 #message-list {
@@ -228,11 +254,15 @@ p {
 
 .recent-message {
   opacity: 0.55;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .unread-message {
   background-color: rgba(255, 0, 0, 0.498);
   border-radius: 5px;
+  max-width: 70%;
   padding: 2px;
 }
 
@@ -259,10 +289,15 @@ header .left {
   justify-content: flex-start;
 }
 
+.listing-title h2 {
+  padding-left: 20px;
+}
+
 header .center {
   display: flex;
-  width: 50%;
-  justify-content: space-evenly;
+  width: 100%;
+  justify-content: center;
+  gap: 2%;
   align-items: center;
 }
 

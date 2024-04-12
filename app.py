@@ -202,7 +202,7 @@ def saved_listings():
 def inbox():
     conn = get_db_connection()
     chats = conn.execute("""          
-        SELECT c.chat_id, l.name AS listing_name, u.username AS sender_username, m.message_content, m.sent_at, 
+        SELECT c.chat_id, l.name AS listing_name, u.username AS sender_username, m.message_content, m.sent_at, l.image_path, 
        (SELECT COUNT(*) FROM messages WHERE chat_id = c.chat_id AND read_status = 0 AND sender_id != :user_id) AS unread_count,
        seller.name_first AS seller_first_name
         FROM chats c
