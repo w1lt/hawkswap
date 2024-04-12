@@ -3,21 +3,117 @@ body {
   font-size: 1rem;
   margin: 0;
   padding: 0;
+  padding-bottom: 40px;
+  min-height: 100vh;
 }
 
 main {
+  flex-grow: 1;
   margin: 0 auto;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   max-width: 800px;
+  padding: 20px;
 }
 
-header a {
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  border: 1px solid #933131;
   border-radius: 5px;
-  padding: 5px;
-  background-color: #dadada;
+  padding: 10px;
+}
 
+.chat-preview {
   text-decoration: none;
   color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: left;
+  padding-bottom: 10px;
+  text-decoration: none;
+  text-transform: none;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.chat-preview:hover {
+  background-color: #f4f4f4;
+}
+.chat-time {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+#message-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: left;
+  padding-bottom: 10px;
+
+  text-transform: none;
+  border-radius: 5px;
+  padding: 5px;
+  list-style: none;
+}
+
+.auth-container {
+  border: 1px solid #933131;
+  padding: 10px;
+  width: 50%;
+  justify-self: center;
+  align-self: center;
+}
+
+.new-listing-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: left;
+  align-self: center;
+  padding-bottom: 10px;
+  width: 90%;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: left;
+  padding-bottom: 10px;
+  text-decoration: none !important;
+  text-transform: none;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 5px;
+  background-color: #f4f4f4;
+}
+
+.listing-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: left;
+  padding-bottom: 10px;
+  text-decoration: none !important;
+  text-transform: none;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.recent-message {
+  opacity: 0.55;
+}
+
+.unread-message {
+  background-color: rgba(255, 0, 0, 0.498);
+  border-radius: 5px;
+  padding: 2px;
 }
 
 .submit-button {
@@ -25,6 +121,7 @@ header a {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  padding-bottom: 5px;
 }
 
 header,
@@ -34,14 +131,45 @@ footer {
   text-align: center;
 }
 
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: center;
+  position: sticky;
+}
+
+header .left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+header .center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header .right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+header a {
+  border-radius: 5px;
+  padding: 5px;
+  margin: 5px;
+  background-color: #dadada;
+  text-decoration: none;
+  color: black;
+}
+
 nav {
   background-color: #333;
   color: white;
   padding: 10px;
-}
-
-main {
-  padding: 20px;
 }
 
 img {
@@ -57,8 +185,42 @@ img {
 
 .listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 5px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  text-align: left;
+  align-self: center;
+  padding-bottom: 10px;
+  width: 50%;
+}
+
+.edit-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.edit-other-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding-bottom: 5px;
 }
 
 .listing {
@@ -73,7 +235,22 @@ img {
 }
 
 .listing-date {
-  opacity: 0.5;
+  opacity: 0.6;
+  padding-top: 10px;
+}
+
+footer {
+  margin-top: 10px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.names {
+  opacity: 0.7;
 }
 
 .listing a {
@@ -93,7 +270,6 @@ img {
   color: black;
 }
 
-/* save listing stles */
 .listing-title {
   display: flex;
   align-items: center;
@@ -115,5 +291,3 @@ img {
 .heart-form {
   display: inline-block;
 }
-
-/* Add additional styles as needed */

@@ -1,96 +1,87 @@
 {% extends 'base.html' %} {% block title %}{{ listing.name }}{% endblock %} {%
 block content %}
-<head>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+<div>
+  <img
+    src="{{ url_for('static', filename=listing.image_path) }}"
+    alt="{{ listing.name }}"
   />
-</head>
-<img
-  src="{{ url_for('static', filename=listing.image_path) }}"
-  alt="{{ listing.name }}"
-/>
-<div class="listing-title">
-  <h1>{{ listing.name }} - ${{ listing.price }}</h1>
+  <div class="listing-title">
+    <h2>{{ listing.name }} - ${{ listing.price }}</h2>
+    {% if saved %}
+    <form
+      action="/save-listing/{{ listing.id }}"
+      method="post"
+      class="heart-form"
+    >
+      <button type="submit" class="heart-btn saved">
+        <i class="fas fa-heart"></i>
+      </button>
+    </form>
+    {% else %}
+    <form
+      action="/save-listing/{{ listing.id }}"
+      method="post"
+      class="heart-form"
+    >
+      <button type="submit" class="heart-btn">
+        <i class="far fa-heart"></i>
+      </button>
+    </form>
+    {% endif %} {% if listing.is_sold %}
+    <p style="color: red">SOLD</p>
+    {% endif %}
+  </div>
 
-  {% if saved %}
-  <form
-    action="/save-listing/{{ listing.id }}"
-    method="post"
-    class="heart-form"
-  >
-    <button type="submit" class="heart-btn saved">
-      <i class="fas fa-heart"></i>
-    </button>
+  {% if current_user.username == sellerusername %}
+  <div class="edit-buttons">
+    <form action="/listing/{{ listing.id }}/edit">
+      <button type="submit">Edit Listing</button>
+    </form>
+  </div>
+  {% endif %}
+
+  <p>{{ listing.description }}</p>
+
+  {% if chat.chat_id == "" and current_user.username != sellerusername %}
+  <form action="/message-seller/{{ listing.id }}" method="post">
+    <label for="message">Message:</label>
+    <textarea
+      id="message"
+      name="message"
+      placeholder="Hi {{ sellerusername }}, is this still available?"
+    ></textarea
+    ><br /><br />
+    <button type="submit">Message Seller</button>
   </form>
-  {% else %}
-  <form
-    action="/save-listing/{{ listing.id }}"
-    method="post"
-    class="heart-form"
-  >
-    <button type="submit" class="heart-btn">
-      <i class="far fa-heart"></i>
-    </button>
+  {% elif chat.chat_id != "" %}
+  <form action="/chat/{{ chat.chat_id }}">
+    <button type="submit">Go to Chat</button>
   </form>
   {% endif %}
-</div>
-
-<script>
-  if ("{{ current_user.username }}" == "{{ sellerusername }}") {
-    document.write(
-      `<form action="/listing/{{ listing.id }}/edit">
-              <input type="submit" value="Edit Listing" />
-            </form>`
-    );
-  }
-</script>
-
-<p>{{ listing.description }}</p>
-<div class="listing-date">
-  Posted
-  <script>
-    var dateposted = new Date("{{ listing.dateposted }}");
-    var currentdate = new Date();
-    var diff = currentdate - dateposted;
-    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    var hours = Math.floor(diff / (1000 * 60 * 60));
-    if (days == 0) {
-      if (hours == 0) {
-        var minutes = Math.floor(diff / (1000 * 60));
-        if (minutes == 0) {
-          document.write("just now");
+  <div class="listing-date">
+    Posted
+    <script>
+      var dateposted = new Date("{{ listing.dateposted }}");
+      var currentdate = new Date();
+      var diff = currentdate - dateposted;
+      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var hours = Math.floor(diff / (1000 * 60 * 60));
+      if (days == 0) {
+        if (hours == 0) {
+          var minutes = Math.floor(diff / (1000 * 60));
+          if (minutes == 0) {
+            document.write("just now");
+          } else {
+            document.write(minutes + " minutes ago");
+          }
         } else {
-          document.write(minutes + " minutes ago");
+          document.write(hours + " hours ago");
         }
       } else {
-        document.write(hours + " hours ago");
+        document.write(days + " days ago");
       }
-    } else {
-      document.write(days + " days ago");
-    }
-  </script>
-  by <a href="/user/{{ sellerusername }}">{{ sellerusername }}</a>
+    </script>
+    by <a href="/user/{{ sellerusername }}">{{ sellerusername }}</a>
+  </div>
 </div>
-<script>
-  console.log("chat id: {{ chat.chat_id }}");
-  if (
-    "{{ current_user.username }}" != "{{ sellerusername }}" &&
-    "{{chat.chat_id}}" == ""
-  ) {
-    document.write(
-      `<form action="/message-seller/{{ listing.id }}" method="post">
-            <label for="message">Message:</label>
-            <textarea id="message" name="message">Hi {{ sellerusername }}, is this still available?</textarea><br /><br />
-            <input type="submit" value="Send Message" />
-          </form>`
-    );
-  } else if ("{{chat.chat_id}}" != "") {
-    document.write(
-      `<form action="/chat/{{ chat.chat_id }}">
-            <input type="submit" value="Go to Chat " />
-          </form>`
-    );
-  }
-</script>
 {% endblock %}

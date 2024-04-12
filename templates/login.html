@@ -1,13 +1,9 @@
 {% extends 'auth_base.html' %} {% block title %}Login | HawkSwap{% endblock %}
 {% block content %}
+
 <h2>Login</h2>
-{% with messages = get_flashed_messages() %} {% if messages %}
-<ul class="flashes">
-  {% for message in messages %}
-  <li>{{ message }}</li>
-  {% endfor %}
-</ul>
-{% endif %} {% endwith %}
+{% with messages = get_flashed_messages() %} {% if messages %} {% for message in
+messages %} {{ message }} {% endfor %} {% endif %} {% endwith %}
 <form action="" method="post">
   <label for="username">Username:</label>
   <input type="text" id="username" name="username" required /><br /><br />
@@ -16,5 +12,6 @@
   <input type="password" id="password" name="password" required /><br /><br />
   <input class="submit-button" type="submit" value="Login" />
 </form>
-<a href="/register">Don't have an account? Register here</a>
+<a href="/register" class="noacc">Don't have an account? Register here</a>
+
 {% endblock %}

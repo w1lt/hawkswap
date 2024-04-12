@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block title %}Saved | HawkSwap{% endblock %} {%
 block content %}
 <h2>Edit Listing</h2>
-<form action="/listing/{{ listing.id }}/edit" method="post">
+<form action="/listing/{{ listing.id }}/edit" method="post" class="edit-form">
   <label for="name">Listing Name:</label>
   <input
     type="text"
@@ -27,12 +27,18 @@ block content %}
   <input type="file" name="image" id="image" /> <br /><br />
   <input type="submit" value="Edit Listing" />
 </form>
-<br /><br />
-<form action="/listing/{{ listing.id }}/delete" method="post">
-  <input type="submit" value="Delete Listing" />
-</form>
 
-<form action="/listing/{{ listing.id }}/mark-as-sold" method="post">
-  <input type="submit" value="Mark as sold" />
-</form>
-form {% endblock %}
+<br />
+<div class="edit-other-buttons">
+  <form action="/listing/{{ listing.id }}/mark-as-sold" method="post">
+    <button type="submit" style="color: green">
+      {% if listing.is_sold %} Mark as Available {% else %} Mark as Sold {%
+      endif %}
+    </button>
+  </form>
+  <form action="/listing/{{ listing.id }}/delete" method="post" onsubmit="return confirm('Are you sure you want to delete this listing? This will remove all chat history and is not recommended unless you have not sold the item and no longer want to sell it.');">
+    <button type="submit" style="color: red">Delete Listing <b>(not recommended)</b></button>
+  </form>
+  </form>
+</div>
+{% endblock %}

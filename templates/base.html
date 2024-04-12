@@ -2,6 +2,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
     <title>{% block title %}HawkSwap{% endblock %}</title>
     <link
       rel="icon"
@@ -11,22 +15,9 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
   <body>
-    <header>{% include 'header.html' %}</header>
+    {% include 'header.html' %}
 
     <main>{% block content %} {% endblock %}</main>
-
-    <footer>
-      <style>
-        footer {
-          left: 0;
-          bottom: 0;
-          width: 100%;
-          background-color: #f5f5f5;
-          text-align: center;
-          padding: 10px;
-        }
-      </style>
-      <p>&copy; 2024 Team Superkey</p>
-    </footer>
+    {% include 'footer.html' %}
   </body>
 </html>
