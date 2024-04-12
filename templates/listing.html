@@ -6,7 +6,16 @@ block content %}
     alt="{{ listing.name }}"
   />
   <div class="listing-title">
-    <h2>{{ listing.name }} - ${{ listing.price }}</h2>
+    <h2>
+      {{ listing.name }} - $
+      <script>
+        //round remoe decimal
+        var price = "{{ listing.price }}"; // ex 123.0 to 123
+        price = parseFloat(price);
+        price = Math.round(price);
+        document.write(price);
+      </script>
+    </h2>
     {% if saved %}
     <form
       action="/save-listing/{{ listing.id }}"
