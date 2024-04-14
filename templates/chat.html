@@ -3,16 +3,10 @@ block content %}
 
 <h2>{{listing_name}} - ${{price}}</h2>
 <div id="message-list"></div>
+<div id="below-messages"></div>
 
-<form id="message-form">
-  <input
-    type="text"
-    id="message"
-    name="message"
-    autofocus
-    required
-    autocomplete="off"
-  />
+<div id="message-form" class="chat-input">
+  <input type="text" id="message" name="message" required />
   <button type="button" id="chatbox" onclick="sendMessage()">Send</button>
   <script>
     document.getElementById("message-form").addEventListener("submit", (e) => {
@@ -20,16 +14,12 @@ block content %}
     });
     document.getElementById("message").addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        //if message is blank, do nothing
-        if (document.getElementById("message").value == "") {
-          return;
-        }
         e.preventDefault();
         sendMessage();
       }
     });
   </script>
-</form>
+</div>
 
 <script>
   function fetchMessages() {
@@ -37,9 +27,8 @@ block content %}
       .then((response) => response.json())
       .then((data) => {
         let messageList = document.getElementById("message-list");
-        messageList.innerHTML = ""; // Clear existing messages
+        messageList.innerHTML = "";
 
-        // Determine the last message index sent by the current user
         let lastSentMessageIndex = -1;
         data.forEach((message, index) => {
           if (message.username == "{{ current_user.username }}") {
@@ -55,44 +44,50 @@ block content %}
               : "message";
 
           let messageContent = document.createElement("span");
-          messageContent.textContent =
-            (message.username == "{{ current_user.username }}"
-              ? ""
-              : message.username + ": ") + message.message_content;
+          messageContent.textContent = message.message_content;
           li.appendChild(messageContent);
 
-          // Append status indicator only to the latest message sent by the current user
           if (index === lastSentMessageIndex) {
             let statusIndicator = document.createElement("span");
-            statusIndicator.style.marginLeft = "10px"; // Add some space between the message and the status
+            statusIndicator.style.marginLeft = "10px";
 
             if (message.read_status) {
               let checkIcon = document.createElement("i");
-              checkIcon.className = "fas fa-check"; // Font Awesome check icon
-              checkIcon.style.color = "green"; // Color the icon
+              checkIcon.className = "fas fa-check";
+              checkIcon.style.color = "green";
               statusIndicator.appendChild(checkIcon);
             } else {
               statusIndicator.textContent = "sent";
-              statusIndicator.style.color = "gray"; // Color the text
+              statusIndicator.style.color = "gray";
             }
-
             li.appendChild(statusIndicator);
           }
-
           messageList.appendChild(li);
         });
+
+        if (document.activeElement === document.getElementById("message")) {
+          scrollToChat();
+        }
       });
   }
 
   function scrollToChat() {
-    var element = document.getElementById("chatbox");
+    var element = document.getElementById("below-messages");
     element.scrollIntoView({ behavior: "smooth" });
   }
 
   function sendMessage() {
     let messageInput = document.getElementById("message");
-    let message = messageInput.value;
-    messageInput.value = ""; // Clear the input after sending
+    let message = messageInput.value.trim(); // Trim whitespace
+    if (message === "") {
+      return; // Prevent sending empty messages
+    }
+    messageInput.value = "";
+    if (window.innerWidth < 768) {
+      messageInput.blur();
+      messageInput.focus(); // Reset focus for mobile keyboards
+    }
+
     fetch("/chat/{{ chat_id }}", {
       method: "POST",
       headers: {
@@ -102,16 +97,16 @@ block content %}
     }).then(() => {
       fetchMessages(); // Refresh messages
     });
-    scrollToChat();
   }
 
-  // Fetch messages every 5 seconds
+  // Refresh messages every 3 seconds
   setInterval(fetchMessages, 3000);
 
-  // Fetch messages when the page loads
-  document.addEventListener("DOMContentLoaded", fetchMessages);
-  //wait half a second and scroll to the bottom of the chat
-  setTimeout(scrollToChat, 100);
+  // Initially load messages and set initial focus
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchMessages();
+    setTimeout(scrollToChat, 200); // Ensure scroll after initial load
+  });
 </script>
 
 {% endblock %}

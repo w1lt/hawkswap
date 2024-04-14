@@ -31,13 +31,13 @@ block content %}
 <br />
 <div class="edit-other-buttons">
   <form action="/listing/{{ listing.id }}/mark-as-sold" method="post">
-    <button type="submit" style="color: green">
+    <button type="submit" >
       {% if listing.is_sold %} Mark as Available {% else %} Mark as Sold {%
       endif %}
     </button>
   </form>
   <form action="/listing/{{ listing.id }}/delete" method="post" onsubmit="return confirm('Are you sure you want to delete this listing? This will remove all chat history and is not recommended unless you have not sold the item and no longer want to sell it.');">
-    <button type="submit" style="color: red">Delete Listing <b>(not recommended)</b></button>
+    <button type="submit" >Delete Listing <b>(not recommended)</b></button>
   </form>
   </form>
 </div>

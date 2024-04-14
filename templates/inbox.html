@@ -9,7 +9,12 @@ block content %}
       src="{{ url_for('static', filename=chat.image_path) }}"
     />
     <div style="max-width: 50%">
+      {% if chat.unread_count > 0 %}
+      <b><div>{{chat.seller_first_name}} | {{ chat.listing_name }}</div></b>
+      {% else %}
       <div>{{chat.seller_first_name}} | {{ chat.listing_name }}</div>
+      {% endif %}
+
       <div class="recent-message">{{ chat.message_content }}</div>
     </div>
 
