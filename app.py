@@ -6,6 +6,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.utils import secure_filename
 import os
 import pytz
+from PIL import Image, ExifTags
+import io
 
 
 app = Flask(__name__)
@@ -24,6 +26,36 @@ db_session = scoped_session(sessionmaker(bind=engine))
 # Function to get the current time in UTC
 def get_utc_now():
     return datetime.datetime.now(pytz.utc)
+
+def compress_image(image, quality=65):
+    """
+    Compress the image, reducing its quality to the specified level,
+    handle EXIF orientation, and return a BytesIO object with the compressed image data.
+    """
+    img = Image.open(image)  # Open the image file
+
+    # Handle EXIF orientation data
+    try:
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                break
+        exif = dict(img._getexif().items())
+
+        if exif[orientation] == 3:
+            img = img.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            img = img.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            img = img.rotate(90, expand=True)
+    except (AttributeError, KeyError, IndexError):
+        # Cases: image doesn't have getexif() property (like PNG),
+        # or there's no EXIF orientation data, or the index doesn't exist
+        pass
+
+    img_io = io.BytesIO()  # Create a BytesIO object to save the compressed image
+    img.save(img_io, 'JPEG', quality=quality)  # Compress the image using JPEG format
+    img_io.seek(0)  # Rewind the file pointer to the start
+    return img_io
 
 # When saving a datetime to the database, use get_utc_now()
 date_posted = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
@@ -106,7 +138,10 @@ def edit_listing(id):
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
             image_path = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-            image.save(os.path.join(app.root_path, 'static', image_path))
+            compressed_image = compress_image(image)
+            # Save the compressed image to the filesystem
+            with open(os.path.join('static', image_path), 'wb') as f:
+                f.write(compressed_image.read())
             conn.execute('UPDATE listings SET name = :name, description = :description, price = :price, image_path = :image_path WHERE id = :id', {'name': name, 'description': description, 'price': price, 'image_path': image_path, 'id': id})
         else:
             conn.execute('UPDATE listings SET name = :name, description = :description, price = :price WHERE id = :id', {'name': name, 'description': description, 'price': price, 'id': id})
@@ -349,13 +384,17 @@ def create_listing():
 
         # Handle image upload
         image = request.files['image']
-        if image:
+        if image and allowed_file(image.filename):
             # Generate a unique filename by appending a timestamp
             timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
             filename = secure_filename(f"{timestamp}_{image.filename}")
             # Save the image in the 'uploads' folder inside the 'static' directory
             image_path = os.path.join('uploads', filename)
-            image.save(os.path.join('static', image_path))  # Save the image to the filesystem
+            # compress the image before saving
+            compressed_image = compress_image(image)
+            # Save the compressed image to the filesystem
+            with open(os.path.join('static', image_path), 'wb') as f:
+                f.write(compressed_image.read())
 
         conn = get_db_connection()
         conn.execute('INSERT INTO listings (name, description, price, dateposted, seller_id, image_path) VALUES (:name, :description, :price, :date_posted, :seller, :image_path)', {'name': name, 'description': description, 'price': price, 'date_posted': date_posted, 'seller': seller, 'image_path': image_path})
@@ -436,4 +475,4 @@ def unread_message_count():
 
 
 if __name__ == '__main__':
-    app.run(debug=True )
+    app.run(debug=True , port=5000, host='192.168.1.242')

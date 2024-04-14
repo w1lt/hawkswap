@@ -1,10 +1,33 @@
 @media only screen and (max-width: 768px) {
-  main,
-  .auth-container,
-  .new-listing-form,
-  .edit-form {
-    max-width: 100%;
-    padding: 10px;
+  main {
+    max-width: 100% !important;
+  }
+
+  #message-list {
+    width: 95% !important;
+  }
+
+  .left {
+    display: none !important;
+  }
+
+  .auth-container {
+    width: 70% !important;
+  }
+
+  .listings-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0px !important;
+  }
+
+  .listing img {
+    /*  make smaller images for mobile devices */
+    width: 150px;
+    height: 150px;
+  }
+
+  .center {
+    justify-content: flex-start !important;
   }
 
   .login-form input {
@@ -36,8 +59,7 @@
     width: 100%;
     height: auto;
   }
-  header a,
-  button {
+  header a {
     padding: 10px;
     min-width: 48px;
     min-height: 48px;
@@ -52,19 +74,7 @@
     width: 90%; /* Make inputs take more screen width */
     font-size: 16px; /* Larger font size for better readability */
   }
-}
 
-body {
-  font-size: 2rem; /* Larger font size for better readability */
-}
-
-a .hawkswap-logo {
-  width: 100%; /* Make width responsive to the container size */
-  height: auto; /* Maintain aspect ratio */
-  max-width: 60px; /* Set a max-width if necessary */
-}
-
-@media only screen and (max-width: 768px) {
   .edit-buttons,
   .listing {
     flex-direction: column;
@@ -73,26 +83,26 @@ a .hawkswap-logo {
   .listings-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
-}
-.hawkswap-logo {
-  width: 100%; /* Make width responsive to the container size */
-  height: auto; /* Maintain aspect ratio */
-  max-width: 60px; /* Set a max-width if necessary */
-}
 
-@media (max-width: 768px) {
+  .hawkswap-logo {
+    max-width: 30px; /* Even smaller logo for mobile devices */
+  }
+
   .hawkswap-logo {
     max-width: 40px; /* Smaller logo for smaller screens */
   }
 }
 
-@media (max-width: 480px) {
-  .hawkswap-logo {
-    max-width: 30px; /* Even smaller logo for mobile devices */
-  }
-}
-
 /* end of media queries */
+
+body {
+  font-size: 2rem; /* Larger font size for better readability */
+}
+.hawkswap-logo {
+  width: 100%; /* Make width responsive to the container size */
+  height: auto; /* Maintain aspect ratio */
+  max-width: 80px; /* Set a max-width if necessary */
+}
 
 html {
   font-size: 16px; /* Standard base size for desktop */
@@ -125,7 +135,6 @@ main {
   flex-direction: column;
   justify-content: center;
   max-width: 70%;
-  padding: 20px;
 }
 
 .chat-container {
@@ -161,7 +170,7 @@ p {
 .inbox-img {
   width: 50px; /* Adjust size as necessary */
   height: 50px;
-  border-radius: 50%; /* Circular images */
+  border-radius: 10%; /* Circular images */
   margin-right: 10px; /* Space between the image and the text */
 }
 
@@ -189,11 +198,15 @@ p {
   flex-direction: column;
   justify-content: left;
   text-align: left;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
   text-transform: none;
   list-style: none;
   width: 80%;
   align-self: center;
+}
+
+.below-messages {
+  margin-top: 10px;
 }
 
 .auth-container {
@@ -211,7 +224,7 @@ p {
   text-align: left;
   align-self: center;
   padding-bottom: 10px;
-  width: 90%;
+  width: 60%;
 }
 
 .message {
@@ -222,7 +235,7 @@ p {
   padding-bottom: 10px;
   text-decoration: none !important;
   text-transform: none;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 5px;
   margin: 5px;
   background-color: #f4f4f4;
@@ -282,11 +295,36 @@ header {
   padding-right: 10px;
   text-align: center;
   position: sticky;
+  top: 0;
+}
+
+.chat-input {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: #f4f4f4;
+  display: flex;
+}
+
+.chat-input input {
+  padding: 5px;
+  border-radius: 5px;
+  width: 80%;
+}
+
+.chat-input button {
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: lightblue;
 }
 
 header .left {
   display: flex;
+  flex-direction: row;
   justify-content: flex-start;
+  align-items: center;
+  gap: 2%;
 }
 
 .listing-title h2 {
@@ -304,6 +342,7 @@ header .center {
 header .right {
   display: flex;
   justify-content: flex-end;
+  padding-left: 3.5%;
 }
 
 header a {
@@ -386,7 +425,6 @@ button {
   cursor: pointer;
   padding: 10px;
   transition: background-color 0.3s;
-  background-color: #f4f4f4;
 }
 
 .login-form input {
@@ -431,7 +469,6 @@ button:hover {
 
 .listing-date {
   opacity: 0.6;
-  padding-top: 5px;
 }
 
 .listing img {

@@ -1,19 +1,5 @@
 {% extends 'base.html' %} {% block title %}Home | HawkSwap{% endblock %} {%
 block content %}
-<script>
-  var currentdate = new Date();
-  var hours = currentdate.getHours();
-  var greeting = "Hello";
-  if (hours >= 0 && hours < 12) {
-    greeting = "Good morning";
-  } else if (hours >= 12 && hours < 18) {
-    greeting = "Good afternoon";
-  } else {
-    greeting = "Good evening";
-  }
-  document.write(greeting + ", {{ current_user.name_first }}!");
-  console.log("Hello, {{ current_user.name_first }} ");
-</script>
 
 <h2>All Listings</h2>
 
