@@ -1,27 +1,43 @@
 {% extends 'base.html' %} {% block title %}Chat | HawkSwap{% endblock %} {%
 block content %}
 
-<h2>{{listing_name}} - ${{price}}</h2>
-<div id="message-list"></div>
-<div id="below-messages"></div>
+<style>
+  /* This style will only apply to the chat page */
+  body {
+    overflow: hidden; /* Prevent scrolling on the body */
+  }
+</style>
 
-<div id="message-form" class="chat-input">
-  <input type="text" id="message" name="message" required />
-  <button type="button" id="chatbox" onclick="sendMessage()">Send</button>
-  <script>
-    document.getElementById("message-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-    });
-    document.getElementById("message").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-  </script>
+<div class="chat-page">
+  <div id="bumper"></div>
+  <div id="message-list"></div>
+
+  <div id="message-form" class="chat-input">
+    <button
+      type="button"
+      id="info"
+      onclick="window.location.href='/chat/{{ chat_id }}/info'"
+    >
+      <i class="fas fa-info-circle"> </i>
+    </button>
+
+    <input type="text" id="message" name="message" required autofocus />
+    <button type="button" id="chatbox" onclick="sendMessage()">
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
 </div>
 
 <script>
+  document.getElementById("message-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+  });
+  document.getElementById("message").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
   function fetchMessages() {
     fetch("/get_messages/{{ chat_id }}")
       .then((response) => response.json())
@@ -72,10 +88,17 @@ block content %}
   }
 
   function scrollToChat() {
-    var element = document.getElementById("below-messages");
-    element.scrollIntoView({ behavior: "smooth" });
-  }
+    var messageList = document.getElementById("message-list");
+    var lastMessage = messageList.lastElementChild;
+    //if there arent many messages, give some padding to the existing "bumper" div to push other messages down and you can see on mobile
+    if (messageList.childElementCount < 15) {
+      document.getElementById("bumper").style.height = "500px";
+    } else {
+      document.getElementById("bumper").style.height = "50px";
+    }
 
+    lastMessage.scrollIntoView({ behavior: "smooth" });
+  }
   function sendMessage() {
     let messageInput = document.getElementById("message");
     let message = messageInput.value.trim(); // Trim whitespace
@@ -108,5 +131,4 @@ block content %}
     setTimeout(scrollToChat, 200); // Ensure scroll after initial load
   });
 </script>
-
 {% endblock %}

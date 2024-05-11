@@ -40,12 +40,17 @@ block content %}
   <img
     src="{{ url_for('static', filename=listing.image_path) }}"
     alt="{{ listing.name }}"
+    class="main-listing-img"
   />
 
   {% if current_user.username == sellerusername %}
   <div class="edit-buttons">
     <form action="/listing/{{ listing.id }}/edit">
-      <button type="submit">Edit Listing</button>
+      <button type="submit">
+        Edit Listing
+
+        <i class="fas fa-edit"></i>
+      </button>
     </form>
   </div>
   {% endif %}
@@ -61,7 +66,10 @@ block content %}
     <textarea id="message" name="message" required>
 Hi {{ sellerusername }}, is this still available?</textarea
     >
-    <button type="submit">Message Seller</button>
+    <button type="submit">
+      Message Seller
+      <i class="fas fa-envelope"></i>
+    </button>
   </form>
   {% elif chat.chat_id and current_user.username != sellerusername %}
   <form action="/chat/{{ chat.chat_id }}">

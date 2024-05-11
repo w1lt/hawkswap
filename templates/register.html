@@ -1,7 +1,6 @@
 {% extends 'auth_base.html' %} {% block title %}Login | HawkSwap{% endblock %}
-{% block content %}
-<h3>Register</h3>
-{% with messages = get_flashed_messages() %} {% if messages %}
+{% block content %} {% with messages = get_flashed_messages() %} {% if messages
+%}
 <ul class="flashes">
   {% for message in messages %}
   <li>{{ message }}</li>
@@ -9,45 +8,40 @@
 </ul>
 {% endif %} {% endwith %}
 <form action="/register" method="post" class="login-form">
-  <label for="username">Username:</label>
-  <input
-    type="text"
-    id="username"
-    name="username"
-    required
-    placeholder="johndoe123"
-  /><br /><br />
-  <label for="firstname">First Name:</label>
+  <input type="email" id="email" name="email" required placeholder="KU Email" />
   <input
     type="text"
     id="first"
     name="first"
     required
-    placeholder="John"
+    placeholder="First Name"
     autocapitalize="on"
-  /><br /><br />
-  <label for="lastname">Last Name:</label>
+  />
   <input
     type="text"
     id="last"
     name="last"
     required
-    placeholder="Doe"
+    placeholder="Last Name"
     autocapitalize="on"
-  /><br /><br />
-  <label for="email">KU Email:</label>
+  />
   <input
-    type="email"
-    id="email"
-    name="email"
+    type="text"
+    id="username"
+    name="username"
     required
-    placeholder="john@ku.edu"
-  /><br /><br />
-  <label for="password">Password:</label>
-  <input type="password" id="password" name="password" required /><br /><br />
+    placeholder="Username"
+  />
+  <input
+    type="password"
+    id="password"
+    name="password"
+    required
+    placeholder="Password"
+  />
   <button type="submit">Register</button>
 </form>
-<a href="/login" class="noacc">Already have an account? <u>Login here</u></a>
-<br />
-<br />
+<div class="noacc">
+  Already have an account? <a href="/login"><u>Log in</u></a>
+</div>
 {% endblock %}

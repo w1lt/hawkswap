@@ -7,6 +7,10 @@
     width: 95% !important;
   }
 
+  .login-form {
+    width: 80% !important;
+  }
+
   .left {
     display: none !important;
   }
@@ -16,14 +20,15 @@
   }
 
   .listings-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
     gap: 0px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
 
   .listing img {
-    /*  make smaller images for mobile devices */
-    width: 150px;
-    height: 150px;
+    width: 150px !important;
+    height: 150px !important;
   }
 
   .center {
@@ -37,11 +42,6 @@
     text-align: left;
     align-self: center;
     width: 100%;
-  }
-
-  .message-form {
-    display: flex;
-    flex-direction: column;
   }
 
   header,
@@ -71,41 +71,37 @@
   button {
     padding: 12px;
     margin: 10px;
-    width: 90%; /* Make inputs take more screen width */
-    font-size: 16px; /* Larger font size for better readability */
+    width: 90%;
+    font-size: 16px;
   }
 
-  .edit-buttons,
   .listing {
     flex-direction: column;
-  }
-
-  .listings-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    max-width: 150px;
   }
 
   .hawkswap-logo {
-    max-width: 30px; /* Even smaller logo for mobile devices */
+    max-width: 30px;
   }
 
   .hawkswap-logo {
-    max-width: 40px; /* Smaller logo for smaller screens */
+    max-width: 40px;
   }
 }
 
 /* end of media queries */
 
 body {
-  font-size: 2rem; /* Larger font size for better readability */
+  font-size: 2rem;
 }
 .hawkswap-logo {
-  width: 100%; /* Make width responsive to the container size */
-  height: auto; /* Maintain aspect ratio */
-  max-width: 80px; /* Set a max-width if necessary */
+  width: 100%;
+  height: auto;
+  max-width: 80px;
 }
 
 html {
-  font-size: 16px; /* Standard base size for desktop */
+  font-size: 16px;
 }
 
 body {
@@ -113,6 +109,53 @@ body {
   font-size: 1rem;
   margin: 0;
   padding: 0;
+}
+
+.auth-body input,
+.auth-body button {
+  background-color: #ffffff;
+}
+
+.auth-body div {
+  background-color: #ffffff38;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 0 auto;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+  box-shadow: 0 0 10px #3333338e;
+}
+
+.message-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-body {
+  background: url("https://www.usnews.com/dims4/USNEWS/bf02c8b/17177859217/resize/800x540%3E/quality/85/?url=https%3A%2F%2Fmedia.beam.usnews.com%2Fe0%2Fe0ca120d3a9ef1d8d4a0872ddc4c83%2Fcollege-photo_1157.jpg")
+    no-repeat center center fixed;
+  background-size: cover;
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  height: 100vh;
+}
+
+.message-form button,
+.message-form textarea {
+  width: 50%;
+}
+
+.listing-preview-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 input,
@@ -137,6 +180,12 @@ main {
   max-width: 70%;
 }
 
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -148,30 +197,37 @@ main {
 }
 
 h1 {
-  font-size: 2rem; /* 32px if base is 16px */
+  font-size: 2rem;
 }
 
 p {
-  font-size: 1rem; /* 16px */
+  font-size: 1rem;
+}
+
+.main-listing-img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 5px;
 }
 
 .chat-preview {
   text-decoration: none;
   color: black;
   display: flex;
-  flex-direction: row; /* Ensure horizontal layout */
-  align-items: center; /* Vertically center the content within each chat */
+  flex-direction: row;
+  align-items: center;
   padding-bottom: 10px;
   border-radius: 5px;
   padding: 5px;
-  margin-bottom: 10px; /* Adds spacing between chat entries */
+  margin-bottom: 10px;
 }
 
 .inbox-img {
-  width: 50px; /* Adjust size as necessary */
+  width: 50px;
   height: 50px;
-  border-radius: 10%; /* Circular images */
-  margin-right: 10px; /* Space between the image and the text */
+  border-radius: 10%;
+  margin-right: 10px;
 }
 
 .chat-preview:hover {
@@ -180,33 +236,80 @@ p {
 .chat-time {
   font-size: 0.8rem;
   color: #666;
-  margin-left: auto; /* Push the time to the right */
+  margin-left: auto;
 }
 
-.message-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
+#message-list {
+  padding-top: 100px;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
   margin: 0 auto;
   width: 80%;
 }
 
-#message-list {
+.info-button {
+  width: 30%;
+  margin: 0 auto;
   display: flex;
-  flex-direction: column;
-  justify-content: left;
-  text-align: left;
-  padding-bottom: 20px;
-  text-transform: none;
-  list-style: none;
-  width: 80%;
-  align-self: center;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
-.below-messages {
-  margin-top: 10px;
+.info-button a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#below-messages {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #ccc;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  text-decoration: none !important;
+  text-transform: none;
+  color: inherit;
+  z-index: 100000;
+}
+
+#below-messages a {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  text-decoration: none !important;
+  text-transform: none;
+  color: inherit;
+}
+
+.chat-info-users {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.chat-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 10%;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+}
+
+#below-messages img {
+  width: 30px;
+  height: 30px;
+  border-radius: 10%;
+  margin-right: 10px;
+  border: 1px solid #ccc;
 }
 
 .auth-container {
@@ -240,6 +343,10 @@ p {
   margin: 5px;
   background-color: #f4f4f4;
   word-wrap: break-word;
+}
+
+#message:focus {
+  box-shadow: none !important;
 }
 
 .user-message {
@@ -286,6 +393,7 @@ footer {
 }
 
 header {
+  z-index: 100000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -296,6 +404,16 @@ header {
   text-align: center;
   position: sticky;
   top: 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-header h2 {
+  margin: 0;
+}
+
+.chat-title {
+  margin: 0 auto;
+  width: fit-content;
 }
 
 .chat-input {
@@ -317,6 +435,8 @@ header {
   border-radius: 5px;
   cursor: pointer;
   background-color: lightblue;
+  width: 20%;
+  color: inherit;
 }
 
 header .left {
@@ -329,6 +449,10 @@ header .left {
 
 .listing-title h2 {
   padding-left: 20px;
+}
+
+#bumper {
+  opacity: 0%;
 }
 
 header .center {
@@ -355,7 +479,7 @@ header a {
   text-decoration: none;
   color: black;
   border-radius: 5px;
-  transition: background-color 0.3s;
+  transition: background-color 0.75s;
 }
 
 header a:hover {
@@ -364,21 +488,19 @@ header a:hover {
 }
 
 .noacc {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.noacc a {
   text-decoration: none;
   color: black;
-  padding-top: 10px;
 }
 
 nav {
   background-color: #333;
   color: white;
   padding: 10px;
-}
-
-img {
-  border-radius: 5%;
-  width: 200px;
-  height: 200px;
 }
 
 .sold-tag {
@@ -389,7 +511,9 @@ img {
 .listings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 50px;
+  gap: 10px;
+  padding: 10px;
+  justify-items: center;
 }
 
 .edit-form {
@@ -416,7 +540,7 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  padding-bottom: 30px;
 }
 
 button {
@@ -436,6 +560,28 @@ button {
   width: 80%;
 }
 
+.login-form ::placeholder {
+  color: #000000ba;
+}
+
+.login-form input {
+  background-color: #ffffff38;
+  padding: 10px;
+  border-radius: 10px;
+  backdrop-filter: blur(30px);
+}
+
+.login-form button {
+  width: 50%;
+  align-self: center;
+  color: white;
+  background-color: #d20034;
+}
+
+.login-form button:hover {
+  background-color: #bc002f;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -443,12 +589,8 @@ button {
   text-align: center;
   align-self: center;
   padding-bottom: 10px;
+  padding-top: 10px;
   width: 50%;
-}
-@media only screen and (max-width: 768px) {
-  .login-form {
-    width: 100%;
-  }
 }
 
 button:hover {
@@ -464,15 +606,25 @@ button:hover {
   text-align: center;
   text-decoration: none;
   color: black;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
+  width: 200px;
+  border-radius: 5px;
+}
+
+.listing a {
+  width: 100%;
 }
 
 .listing-date {
-  opacity: 0.6;
+  color: grey;
 }
 
 .listing img {
   border: 0.5px solid grey;
+  border-radius: 5px;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
 }
 
 footer {

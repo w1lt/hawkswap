@@ -6,13 +6,17 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
-  <body>
+  <body class="auth-body">
     <main>
       <img
         src="{{ url_for('static', filename='hawkswap.png') }}"
         alt=""
-        style="align-self: center"
+        style="align-self: center; width: 150px; height: 150px"
       />
+      <div>
+        Your #1 place for buying and selling at KU. <br />Safe, simple, and
+        student-focused.
+      </div>
       {% block content %} {% endblock %}
     </main>
 

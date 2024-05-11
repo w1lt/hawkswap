@@ -33,7 +33,6 @@ def compress_image(image, quality=65):
     handle EXIF orientation, and return a BytesIO object with the compressed image data.
     """
     img = Image.open(image)  # Open the image file
-
     # Handle EXIF orientation data
     try:
         for orientation in ExifTags.TAGS.keys():
@@ -48,16 +47,21 @@ def compress_image(image, quality=65):
         elif exif[orientation] == 8:
             img = img.rotate(90, expand=True)
     except (AttributeError, KeyError, IndexError):
-        # Cases: image doesn't have getexif() property (like PNG),
-        # or there's no EXIF orientation data, or the index doesn't exist
         pass
+    # Convert RGBA to RGB (remove alpha channel) if necessary
+    if img.mode == 'RGBA':
+        # Create a white background image (since JPEG doesn't support transparency)
+        background = Image.new("RGB", img.size, (255, 255, 255))
+        background.paste(img, mask=img.split()[3])  # 3 is the index of the alpha channel in the RGBA format
+        img = background
 
     img_io = io.BytesIO()  # Create a BytesIO object to save the compressed image
-    img.save(img_io, 'JPEG', quality=quality)  # Compress the image using JPEG format
-    img_io.seek(0)  # Rewind the file pointer to the start
+    img.save(img_io, 'JPEG', quality=quality)  
+    img_io.seek(0)  
     return img_io
 
-# When saving a datetime to the database, use get_utc_now()
+
+
 date_posted = get_utc_now().strftime("%Y-%m-%d %H:%M:%S")
 
 def get_db_connection():
@@ -236,26 +240,33 @@ def saved_listings():
 @login_required
 def inbox():
     conn = get_db_connection()
-    chats = conn.execute("""          
-        SELECT c.chat_id, l.name AS listing_name, u.username AS sender_username, m.message_content, m.sent_at, l.image_path, 
-       (SELECT COUNT(*) FROM messages WHERE chat_id = c.chat_id AND read_status = 0 AND sender_id != :user_id) AS unread_count,
-       seller.name_first AS seller_first_name
+    # Use an improved SQL query with grouping to avoid duplicates
+    chats = conn.execute("""
+        SELECT c.chat_id, l.name AS listing_name, u.username AS sender_username, m.message_content, m.sent_at, l.image_path,
+        (SELECT COUNT(*) FROM messages WHERE chat_id = c.chat_id AND read_status = 0 AND sender_id != :user_id) AS unread_count,
+        seller.name_first AS seller_first_name
         FROM chats c
         JOIN listings l ON c.listing_id = l.id
         JOIN users seller ON l.seller_id = seller.id
         JOIN (
-    SELECT chat_id, MAX(sent_at) as max_sent_at
-    FROM messages
-    GROUP BY chat_id
-) latest_msg ON c.chat_id = latest_msg.chat_id
-JOIN messages m ON c.chat_id = m.chat_id AND m.sent_at = latest_msg.max_sent_at
-JOIN users u ON m.sender_id = u.id
-WHERE c.buyer_id = :user_id OR c.seller_id = :user_id
-ORDER BY m.sent_at DESC;
-
+            SELECT chat_id, sender_id, message_content, sent_at
+            FROM messages
+            WHERE sent_at IN (
+                SELECT MAX(sent_at)
+                FROM messages
+                GROUP BY chat_id
+            )
+        ) m ON c.chat_id = m.chat_id
+        JOIN users u ON m.sender_id = u.id
+        WHERE c.buyer_id = :user_id OR c.seller_id = :user_id
+        GROUP BY c.chat_id
+        ORDER BY m.sent_at DESC;
     """, {'user_id': current_user.id}).fetchall()
     conn.close()
     return render_template('inbox.html', chats=chats)
+
+
+
 
 
 @app.route('/message-seller/<listing_id>', methods=['GET', 'POST'])
@@ -298,7 +309,7 @@ def chat(chat_id):
         ORDER BY m.sent_at
     """, {'chat_id': chat_id}).fetchall()
     listing_info = conn.execute("""
-        SELECT l.name AS listing_name, l.price 
+        SELECT l.name , l.price, l.image_path, l.id
         FROM chats c
         JOIN listings l ON c.listing_id = l.id
         WHERE c.chat_id = :chat_id
@@ -321,7 +332,24 @@ def chat(chat_id):
         conn.commit()
         conn.close()
         return '', 204  # Return an empty response for AJAX
-    return render_template('chat.html', messages=messages, chat_id=chat_id, listing_name=listing_info['listing_name'], price=listing_info['price'])
+    return render_template('chat.html', messages=messages, chat_id=chat_id, listing_info=listing_info)
+
+@app.route('/chat/<chat_id>/info', methods=['GET', 'POST'])
+@login_required
+def chat_info(chat_id):
+    conn = get_db_connection()
+    chat_info = conn.execute("""
+        SELECT u1.username AS buyer, u2.username AS seller, l.name, l.price, l.image_path, l.id, c.chat_id
+        FROM chats c
+        JOIN users u1 ON c.buyer_id = u1.id
+        JOIN users u2 ON c.seller_id = u2.id
+        JOIN listings l ON c.listing_id = l.id
+        WHERE c.chat_id = :chat_id
+    """, {'chat_id': chat_id}).fetchone()
+    if chat_info['buyer'] != current_user.username and chat_info['seller'] != current_user.username:
+        return redirect(url_for('inbox'))
+    conn.close()
+    return render_template('chat_info.html', chat_info=chat_info)
 
 @app.route('/get_messages/<chat_id>', methods=['GET'])
 def get_messages(chat_id):
@@ -475,4 +503,4 @@ def unread_message_count():
 
 
 if __name__ == '__main__':
-    app.run(debug=True , port=5000, host='192.168.1.242')
+    app.run(debug=True, host='10.104.12.147', port=5000)

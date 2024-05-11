@@ -29,7 +29,6 @@ block content %}
           postedDate.getTime() - postedDate.getTimezoneOffset() * 60000
         );
         var now = new Date();
-
         var diff = now - localDate;
         var diffSeconds = Math.floor(diff / 1000);
         var diffMinutes = Math.floor(diff / (1000 * 60));

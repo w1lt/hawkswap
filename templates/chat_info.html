@@ -1,0 +1,56 @@
+{% extends 'base.html' %} {% block title %}Chat Info| HawkSwap{% endblock %} {%
+block content %}
+
+<!-- conn = get_db_connection()
+    chat_info = conn.execute("""
+        //get both users in the chat and the listing info
+        SELECT u1.username AS buyer, u2.username AS seller, l.name, l.price, l.image_path, l.id, c.chat_id
+        FROM chats c
+        JOIN users u1 ON c.buyer_id = u1.id
+        JOIN users u2 ON c.seller_id = u2.id
+        JOIN listings l ON c.listing_id = l.id
+        WHERE c.chat_id = :chat_id
+    """, {'chat_id': chat_id}).fetchone()
+    conn.close()
+    return render_template('chat_info.html', chat_info=chat_info) -->
+
+<div class="chat-info">
+  <div class="chat-info-header">
+    <h2>Chat Info</h2>
+  </div>
+  <div class="chat-info-content">
+    <div class="chat-info-listing">
+      <img src="{{ url_for('static', filename=chat_info.image_path) }}" />
+      <div>
+        {{ chat_info.name }} - ${{
+        chat_info.price }}
+        </div>
+    </div>
+    <div class="chat-info-users">
+      <div>Buyer: <a href="/user/{{ chat_info.buyer }}">
+        {% if chat_info.buyer == current_user.username %}
+        You
+        {% else %}
+        {{ chat_info.buyer }}
+        {% endif %}
+      </a></div>
+      <div>Seller: <a href="/user/{{ chat_info.seller }}">
+        {% if chat_info.seller == current_user.username %}
+        You
+        {% else %}
+        {{ chat_info.seller }}
+        {% endif %}
+      </a></div>
+    </div>
+  </div>
+  <div class="chat-info-buttons">
+    <form action="/chat/{{ chat_info.chat_id }}">
+      <button type="submit">Go to Chat</button>
+    </form>
+
+    <form action="/listing/{{ chat_info.id }}">
+      <button type="submit">View Listing</button>
+  </div>
+
+  {% endblock %}
+</div>
