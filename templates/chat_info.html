@@ -1,18 +1,6 @@
 {% extends 'base.html' %} {% block title %}Chat Info| HawkSwap{% endblock %} {%
 block content %}
 
-<!-- conn = get_db_connection()
-    chat_info = conn.execute("""
-        //get both users in the chat and the listing info
-        SELECT u1.username AS buyer, u2.username AS seller, l.name, l.price, l.image_path, l.id, c.chat_id
-        FROM chats c
-        JOIN users u1 ON c.buyer_id = u1.id
-        JOIN users u2 ON c.seller_id = u2.id
-        JOIN listings l ON c.listing_id = l.id
-        WHERE c.chat_id = :chat_id
-    """, {'chat_id': chat_id}).fetchone()
-    conn.close()
-    return render_template('chat_info.html', chat_info=chat_info) -->
 
 <div class="chat-info">
   <div class="chat-info-header">
